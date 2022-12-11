@@ -1,21 +1,18 @@
-//snippet-sourcedescription:[GetItem.cpp demonstrates how to retrieve an item from an Amazon DynamoDB table.]
-//snippet-keyword:[AWS SDK for C++]
-//snippet-keyword:[Code Sample]
-//snippet-service:[Amazon DynamoDB]
-//snippet-sourcetype:[full-example]
-//snippet-sourcedate:[11/30/2021]
-//snippet-sourceauthor:[scmacdon - aws]
-
-
-/*
-   Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-   SPDX-License-Identifier: Apache-2.0
-*/
-
-//snippet-start:[dynamodb.cpp.get_item.inc]
-
+/***************************************************************************
+ * Copyright (C) 2017 - 2020, Lanka Hsu, <lankahsu@gmail.com>, et al.
+ *
+ * This software is licensed as described in the file COPYING, which
+ * you should have received as part of this distribution.
+ *
+ * You may opt to use, copy, modify, merge, publish, distribute and/or sell
+ * copies of the Software, and permit persons to whom the Software is
+ * furnished to do so, under the terms of the COPYING file.
+ *
+ * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+ * KIND, either express or implied.
+ *
+ ***************************************************************************/
 #include <iostream>
-//snippet-end:[dynamodb.cpp.get_item.inc]
 
 #include <signal.h>
 #include <getopt.h>
