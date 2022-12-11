@@ -19,10 +19,6 @@
 #include <aws/core/utils/Outcome.h> 
 #include <aws/dynamodb/DynamoDBClient.h>
 #include <aws/dynamodb/model/AttributeDefinition.h>
-#include <aws/dynamodb/model/GetItemRequest.h>
-
-#include <aws/dynamodb/model/PutItemRequest.h>
-#include <aws/dynamodb/model/PutItemResult.h>
 
 #include "utilx9.h"
 
@@ -92,8 +88,11 @@ typedef struct DyDB_InfoX_STRUCT
 
 void dydb_show_attr(Aws::String& name, Aws::DynamoDB::Model::AttributeValue *attr);
 void dydb_show_listX(DyDB_InfoX_t *dydb_ctx);
+
 int dydb_get_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_put_item(DyDB_InfoX_t *dydb_ctx);
+int dydb_update_item(DyDB_InfoX_t *dydb_ctx);
+
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli);
 

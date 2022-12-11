@@ -27,7 +27,7 @@ $ make
 {
  "Artist": "Lanka",
  "SongTitle": "Lanka",
- "AlbumTitle": "Lanka123",
+ "AlbumTitle": "Album123",
  "Awards": "1",
  "Sponsor": [
   "dog",
@@ -35,18 +35,41 @@ $ make
  ]
 }
 ```
+```json
+{
+ "Artist": "Lanka",
+ "SongTitle": "Lanka",
+ "AlbumTitle": "Album123",
+ "Awards": "2",
+ "Sponsor": [
+  "dog",
+  "mouse"
+ ]
+}
+```
+
 ```bash
 $ ./awsx_123
-[240029/240029] dydb_put_item:169 - PutItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
-[240029/240029] dydb_get_item:125 - GetItem ok !!! (table_name: Music 5, Artist: Lanka, SongTitle: Lanka)
-[240029/240029] dydb_show_attr:29 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[240029/240029] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[240029/240029] dydb_show_attr:29 - (STRING: {"S":"1"}, Awards: 1)
-[240029/240029] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[240029/240029] dydb_show_attr:54 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"}]})
-[240029/240029] dydb_show_attr:57 - (Sponsor[0]: dog)
-[240029/240029] dydb_show_attr:57 - (Sponsor[1]: mouse)
-[240029/240029] main:236 - Bye-Bye !!!
+[240628/240628] dydb_put_item:169 - PutItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[240628/240628] dydb_get_item:125 - GetItem ok !!! (table_name: Music 5, Artist: Lanka, SongTitle: Lanka)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"1"}, Awards: 1)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[240628/240628] dydb_show_attr:54 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"}]})
+[240628/240628] dydb_show_attr:57 - (Sponsor[0]: dog)
+[240628/240628] dydb_show_attr:57 - (Sponsor[1]: mouse)
+[240628/240628] dydb_update_item:226 - UpdateItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[240628/240628] dydb_get_item:125 - GetItem ok !!! (table_name: Music 5, Artist: Lanka, SongTitle: Lanka)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"2"}, Awards: 2)
+[240628/240628] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[240628/240628] dydb_show_attr:54 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"}]})
+[240628/240628] dydb_show_attr:57 - (Sponsor[0]: dog)
+[240628/240628] dydb_show_attr:57 - (Sponsor[1]: mouse)
+[240628/240628] main:251 - Bye-Bye !!!
+
 ```
 
 # 6. License

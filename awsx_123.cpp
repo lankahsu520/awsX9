@@ -89,7 +89,22 @@ static void aws_open(void)
 		dydb_put_item(dydb_ctx);
 	}
 	dydb_get_item(dydb_ctx);
+	dydb_show_listX(dydb_ctx);
 
+	{
+		clist_free(dydb_ctx->clistAttrX);
+		
+		DyDB_AttrX_t *attrX = NULL;
+
+		// STRING
+		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+		attrX->name = "Awards";
+		attrX->attr.SetS("2");
+		clist_push(dydb_ctx->clistAttrX, attrX);
+
+		dydb_update_item(dydb_ctx);
+	}
+	dydb_get_item(dydb_ctx);
 	dydb_show_listX(dydb_ctx);
 }
 
