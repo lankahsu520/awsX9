@@ -17,6 +17,7 @@ $ vi conf/github.conf
 export PJ_HAS_AWSX9=yes
 export PJ_HAS_AWS_SDK_CPP=yes
 # please build AWS SDK C++ by yourself.
+# or update utilx9/user/library_pub.mk
 $ make
    ```
 
