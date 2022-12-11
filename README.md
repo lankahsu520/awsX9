@@ -23,18 +23,34 @@ $ make
 
 # 5. Example or Usage
 - awsx_123 - an example. to get item from Amazon DynamoDB.
+```json
+{
+ "Artist": "Lanka",
+ "SongTitle": "Lanka",
+ "AlbumTitle": "Lanka123",
+ "Awards": "1",
+ "Sponsor": [
+  "dog",
+  "mouse"
+ ]
+}
+```
 ```bash
 $ ./awsx_123
-[9368/9368] dydb_get_item:125 - GetItem ok !!! (table_name: Music 4, Artist: Acme Band, SongTitle: Happy Day)
-[9368/9368] dydb_show_attr:29 - (STRING: {"S":"Songs About Life"}, AlbumTitle: Songs About Life)
-[9368/9368] dydb_show_attr:29 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
-[9368/9368] dydb_show_attr:29 - (STRING: {"S":"10"}, Awards: 10)
-[9368/9368] dydb_show_attr:29 - (STRING: {"S":"Happy Day"}, SongTitle: Happy Day)
-[9368/9368] main:205 - Bye-Bye !!!
-
+[240029/240029] dydb_put_item:169 - PutItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[240029/240029] dydb_get_item:125 - GetItem ok !!! (table_name: Music 5, Artist: Lanka, SongTitle: Lanka)
+[240029/240029] dydb_show_attr:29 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[240029/240029] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[240029/240029] dydb_show_attr:29 - (STRING: {"S":"1"}, Awards: 1)
+[240029/240029] dydb_show_attr:29 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[240029/240029] dydb_show_attr:54 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"}]})
+[240029/240029] dydb_show_attr:57 - (Sponsor[0]: dog)
+[240029/240029] dydb_show_attr:57 - (Sponsor[1]: mouse)
+[240029/240029] main:236 - Bye-Bye !!!
 ```
 
 # 6. License
+
 awsX9 is under the New BSD License (BSD-3-Clause).
 
 
