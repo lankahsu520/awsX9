@@ -14,6 +14,18 @@
  ***************************************************************************/
 #include <iostream>
 
+//#include <aws/core/Aws.h>
+//#include <aws/core/utils/Outcome.h> 
+//#include <aws/dynamodb/DynamoDBClient.h>
+//#include <aws/dynamodb/model/AttributeDefinition.h>
+#include <aws/dynamodb/model/GetItemRequest.h>
+
+#include <aws/dynamodb/model/PutItemRequest.h>
+#include <aws/dynamodb/model/PutItemResult.h>
+
+#include <aws/dynamodb/model/UpdateItemRequest.h>
+#include <aws/dynamodb/model/UpdateItemResult.h>
+
 #include "awsx9.h"
 
 using namespace std;
@@ -167,6 +179,63 @@ int dydb_put_item(DyDB_InfoX_t *dydb_ctx)
 	else
 	{
 		DBG_IF_LN("PutItem ok !!! (table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+	}
+
+	return ret;
+}
+
+int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
+{
+	int ret = 0;
+
+	if ( ( ret= DYDB_CTX_CHECK(dydb_ctx) ) == -1 )
+	{
+		return ret;
+	}
+	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+
+	Aws::DynamoDB::Model::UpdateItemRequest dydb_updateitem_req;
+	Aws::DynamoDB::Model::AttributeValue dydb_attr;
+
+	// Set up the request.
+	dydb_updateitem_req.SetTableName(dydb_ctx->table_name);
+	dydb_updateitem_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
+	dydb_updateitem_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
+
+	DyDB_AttrX_t *cur = NULL;
+
+	for (cur = (DyDB_AttrX_t *)clist_head(dydb_ctx->clistAttrX); cur != NULL; cur = (DyDB_AttrX_t *)clist_item_next((void *)cur))
+	{
+		Aws::String dydb_update_expression("SET #a = :valueA");
+		dydb_updateitem_req.SetUpdateExpression(dydb_update_expression);
+
+		// Construct attribute name argument
+		// Note: Setting the ExpressionAttributeNames argument is required only
+		// when the name is a reserved word, such as "default". Otherwise, the 
+		// name can be included in the update_expression, as in 
+		// "SET MyAttributeName = :valueA"
+		Aws::Map<Aws::String, Aws::String> expressionAttributeNames;
+		expressionAttributeNames["#a"] = cur->name;
+		dydb_updateitem_req.SetExpressionAttributeNames(expressionAttributeNames);
+
+		// Construct attribute value argument.
+		Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> expressionAttributeValues;
+		expressionAttributeValues[":valueA"] = cur->attr;
+		dydb_updateitem_req.SetExpressionAttributeValues(expressionAttributeValues);
+
+		// only update 1*item.
+		break;
+	}
+
+	const Aws::DynamoDB::Model::UpdateItemOutcome dydb_updateitem_res = dydb_ctx->dydb_cli->UpdateItem(dydb_updateitem_req);
+	if (!dydb_updateitem_res.IsSuccess())
+	{
+		DBG_ER_LN("UpdateItem error - %s !!! (table_name: %s , %s: %s, %s: %s)", dydb_updateitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		ret = -1;
+	}
+	else
+	{
+		DBG_IF_LN("UpdateItem ok !!! (table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 	}
 
 	return ret;
