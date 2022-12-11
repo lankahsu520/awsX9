@@ -47,6 +47,7 @@ endif
 
 #** HEADER_FILES **
 HEADER_FILES = \
+							awsx9.h
 
 #** librarys **
 LIBS_yes = $(LIBXXXS_yes)

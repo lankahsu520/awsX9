@@ -12,14 +12,18 @@ Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob
 
 
 # 4. Build
-   ```
+   ```bash
+$ vi conf/github.conf
+export PJ_HAS_AWSX9=yes
+export PJ_HAS_AWS_SDK_CPP=yes
+# please build AWS SDK C++ by yourself.
 $ make
    ```
 
 # 5. Example or Usage
 - awsx_123 - an example. to get item from Amazon DynamoDB.
 ```bash
-./awsx_123
+$ ./awsx_123
 [9368/9368] dydb_get_item:125 - GetItem ok !!! (table_name: Music 4, Artist: Acme Band, SongTitle: Happy Day)
 [9368/9368] dydb_show_attr:29 - (STRING: {"S":"Songs About Life"}, AlbumTitle: Songs About Life)
 [9368/9368] dydb_show_attr:29 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
