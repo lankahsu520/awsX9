@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 - 2020, Lanka Hsu, <lankahsu@gmail.com>, et al.
+ * Copyright (C) 2022, Lanka Hsu, <lankahsu@gmail.com>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution.
