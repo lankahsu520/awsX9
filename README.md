@@ -13,7 +13,7 @@ Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob
 
 # 4. Build
    ```bash
-$ vi conf/github.conf
+$ vi utilx9/conf/github.conf
 export PJ_HAS_AWSX9=yes
 export PJ_HAS_AWS_SDK_CPP=yes
 # please build AWS SDK C++ by yourself.
