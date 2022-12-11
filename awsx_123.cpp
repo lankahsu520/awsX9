@@ -40,9 +40,9 @@ static void app_set_quit(int mode)
 
 #define DYDB_TABLE_NAME_MUSIC "Music"
 #define DYDB_PK_NAME_ARTIST "Artist"
-#define DYDB_PK_VAL_ACME_BAND "Acme Band"
+#define DYDB_PK_VAL_ACME_BAND "Lanka"//"Acme Band"
 #define DYDB_SK_NAME_SONG_TITLE "SongTitle"
-#define DYDB_SK_VAL_HAPPY_DAY "Happy Day"
+#define DYDB_SK_VAL_HAPPY_DAY "Lanka"//"Lanka520520"//"Happy Day"
 
 DyDB_InfoX_t dydb_t_Music = {
 	.dydb_cli = NULL,
@@ -55,8 +55,42 @@ DyDB_InfoX_t dydb_t_Music = {
 
 static void aws_open(void)
 {
-	dydb_get_item(&dydb_t_Music);
-	dydb_show_listX(&dydb_t_Music);
+	DyDB_InfoX_t *dydb_ctx = &dydb_t_Music;
+
+	{
+		clist_free(dydb_ctx->clistAttrX);
+
+		DyDB_AttrX_t *attrX = NULL;
+
+		// STRING
+		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+		attrX->name = "AlbumTitle";
+		attrX->attr.SetS("Album123");
+		clist_push(dydb_ctx->clistAttrX, attrX);
+
+		// STRING
+		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+		attrX->name = "Awards";
+		attrX->attr.SetS("1");
+		clist_push(dydb_ctx->clistAttrX, attrX);
+
+		// ATTRIBUTE_LIST
+		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+		Aws::Vector<std::shared_ptr<Aws::DynamoDB::Model::AttributeValue>> attrVector;
+		std::shared_ptr<Aws::DynamoDB::Model::AttributeValue> attrPtr = Aws::MakeShared<Aws::DynamoDB::Model::AttributeValue>( "Sponsor" );
+		attrPtr->SetS("dog");
+		attrVector.push_back(std::make_shared<Aws::DynamoDB::Model::AttributeValue>(*attrPtr));
+		attrPtr->SetS("mouse");
+		attrVector.push_back(std::make_shared<Aws::DynamoDB::Model::AttributeValue>(*attrPtr));
+		attrX->name = "Sponsor";
+		attrX->attr.SetL(attrVector);
+		clist_push(dydb_ctx->clistAttrX, attrX);
+
+		dydb_put_item(dydb_ctx);
+	}
+	dydb_get_item(dydb_ctx);
+
+	dydb_show_listX(dydb_ctx);
 }
 
 static void aws_free(void)
