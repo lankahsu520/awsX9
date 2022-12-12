@@ -58,54 +58,32 @@ static void aws_open(void)
 	DyDB_InfoX_t *dydb_ctx = &dydb_t_Music;
 
 	{
-		clist_free(dydb_ctx->clistAttrX);
+		dydb_ctx_attrX_free(dydb_ctx);
 
-		DyDB_AttrX_t *attrX = NULL;
+		dydb_ctx_attrX_addS(dydb_ctx, (char*)"AlbumTitle", (char*)"Album123");
 
-		// STRING
-		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
-		attrX->name = "AlbumTitle";
-		attrX->attr.SetS("Album123");
-		clist_push(dydb_ctx->clistAttrX, attrX);
+		dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"1");
 
-		// STRING
-		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
-		attrX->name = "Awards";
-		attrX->attr.SetS("1");
-		clist_push(dydb_ctx->clistAttrX, attrX);
-
-		// ATTRIBUTE_LIST
-		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
-		Aws::Vector<std::shared_ptr<Aws::DynamoDB::Model::AttributeValue>> attrVector;
-		std::shared_ptr<Aws::DynamoDB::Model::AttributeValue> attrPtr = Aws::MakeShared<Aws::DynamoDB::Model::AttributeValue>( "Sponsor" );
-		attrPtr->SetS("dog");
-		attrVector.push_back(std::make_shared<Aws::DynamoDB::Model::AttributeValue>(*attrPtr));
-		attrPtr->SetS("mouse");
-		attrVector.push_back(std::make_shared<Aws::DynamoDB::Model::AttributeValue>(*attrPtr));
-		attrX->name = "Sponsor";
-		attrX->attr.SetL(attrVector);
-		clist_push(dydb_ctx->clistAttrX, attrX);
+		char sponsor_val[LEN_OF_VAL128] = "dog:mouse:tiger";
+		dydb_ctx_attrX_addL_with_composeS(dydb_ctx, (char*)"Sponsor", sponsor_val);
 
 		dydb_put_item(dydb_ctx);
 	}
+
+#if (1)
 	dydb_get_item(dydb_ctx);
 	dydb_show_listX(dydb_ctx);
 
 	{
-		clist_free(dydb_ctx->clistAttrX);
-		
-		DyDB_AttrX_t *attrX = NULL;
+		dydb_ctx_attrX_free(dydb_ctx);
 
-		// STRING
-		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
-		attrX->name = "Awards";
-		attrX->attr.SetS("2");
-		clist_push(dydb_ctx->clistAttrX, attrX);
+		dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"2");
 
 		dydb_update_item(dydb_ctx);
 	}
 	dydb_get_item(dydb_ctx);
 	dydb_show_listX(dydb_ctx);
+#endif
 }
 
 static void aws_free(void)
