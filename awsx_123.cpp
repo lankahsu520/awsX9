@@ -57,7 +57,16 @@ static void aws_open(void)
 {
 	DyDB_InfoX_t *dydb_ctx = &dydb_t_Music;
 
+#if (1)
 	{
+		//** put_item **
+		dydb_del_item(dydb_ctx);
+	}
+#endif
+
+#if (1)
+	{
+		//** put_item **
 		dydb_ctx_attrX_free(dydb_ctx);
 
 		dydb_ctx_attrX_addS(dydb_ctx, (char*)"AlbumTitle", (char*)"Album123");
@@ -69,11 +78,14 @@ static void aws_open(void)
 
 		dydb_put_item(dydb_ctx);
 	}
+#endif
+
+	{
+		dydb_get_item(dydb_ctx);
+		dydb_show_listX(dydb_ctx);
+	}
 
 #if (1)
-	dydb_get_item(dydb_ctx);
-	dydb_show_listX(dydb_ctx);
-
 	{
 		dydb_ctx_attrX_free(dydb_ctx);
 

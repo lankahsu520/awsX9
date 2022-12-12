@@ -77,6 +77,7 @@ typedef struct DyDB_InfoX_STRUCT
 	const char *sk;
 	const char *sk_val;
 
+	size_t attr_size; // pk + sk + AttrX
 	const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> *mapAry;
 	CLIST_STRUCT(clistAttrX);
 } DyDB_InfoX_t;
@@ -89,6 +90,7 @@ typedef struct DyDB_InfoX_STRUCT
 void dydb_show_attr(Aws::String& name, Aws::DynamoDB::Model::AttributeValue *attr);
 void dydb_show_listX(DyDB_InfoX_t *dydb_ctx);
 
+int dydb_del_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_get_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_put_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx);
