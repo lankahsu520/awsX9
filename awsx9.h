@@ -37,7 +37,7 @@ extern "C" {
 
 
 //** dynamodb **
-#define DYDB_CTX_CHECK(ptr) \
+#define DYDB_CTX_CHECK_ALL(ptr) \
 	({ int __ret = 0; \
 		if ( ( ptr->dydb_cli == NULL ) \
 			|| ( ptr->table_name == NULL ) \
@@ -45,6 +45,19 @@ extern "C" {
 			|| ( ptr->pk_val == NULL ) \
 			|| ( ptr->sk == NULL ) \
 			|| ( ptr->sk_val == NULL ) )  \
+		{ \
+			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p, sk: %p, sk_val: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val); \
+			__ret = -1; \
+		} \
+		__ret; \
+	})
+	
+#define DYDB_CTX_CHECK_PK(ptr) \
+	({ int __ret = 0; \
+		if ( ( ptr->dydb_cli == NULL ) \
+			|| ( ptr->table_name == NULL ) \
+			|| ( ptr->pk == NULL ) \
+			|| ( ptr->pk_val == NULL ) ) \
 		{ \
 			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p, sk: %p, sk_val: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val); \
 			__ret = -1; \
@@ -67,6 +80,13 @@ typedef struct DyDB_AttrX_Struct
 	Aws::DynamoDB::Model::AttributeValue attr;
 } DyDB_AttrX_t;
 
+typedef struct DyDB_ItemX_Struct
+{
+	void* next;
+
+	CLIST_STRUCT(clistAttrX);
+} DyDB_ItemX_t;
+
 typedef struct DyDB_InfoX_STRUCT
 {
 	Aws::DynamoDB::DynamoDBClient *dydb_cli;
@@ -78,8 +98,12 @@ typedef struct DyDB_InfoX_STRUCT
 	const char *sk_val;
 
 	size_t attr_size; // pk + sk + AttrX
-	const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> *mapAry;
+	const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> *mapAttr;
 	CLIST_STRUCT(clistAttrX);
+
+	size_t items_size;
+	const Aws::Vector<Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>> *vectorMapAttr;
+	CLIST_STRUCT(clistItemX);
 } DyDB_InfoX_t;
 
 
@@ -88,16 +112,20 @@ typedef struct DyDB_InfoX_STRUCT
 //******************************************************************************
 
 void dydb_show_attr(Aws::String& name, Aws::DynamoDB::Model::AttributeValue *attr);
-void dydb_show_listX(DyDB_InfoX_t *dydb_ctx);
+void dydb_show_attrX(DyDB_InfoX_t *dydb_ctx);
+void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx);
 
 int dydb_del_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_get_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_put_item(DyDB_InfoX_t *dydb_ctx);
+int dydb_query_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx);
 
 void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);
 void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);
 void dydb_ctx_attrX_free(DyDB_InfoX_t *dydb_ctx);
+
+void dydb_ctx_itemX_free(DyDB_InfoX_t *dydb_ctx);
 
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli);
