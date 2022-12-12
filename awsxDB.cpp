@@ -18,6 +18,8 @@
 //#include <aws/core/utils/Outcome.h> 
 //#include <aws/dynamodb/DynamoDBClient.h>
 //#include <aws/dynamodb/model/AttributeDefinition.h>
+#include <aws/dynamodb/model/DeleteItemRequest.h>
+
 #include <aws/dynamodb/model/GetItemRequest.h>
 
 #include <aws/dynamodb/model/PutItemRequest.h>
@@ -92,6 +94,39 @@ void dydb_show_listX(DyDB_InfoX_t *dydb_ctx)
 	}
 }
 
+int dydb_del_item(DyDB_InfoX_t *dydb_ctx)
+{
+	int ret = 0;
+
+	if ( ( ret= DYDB_CTX_CHECK(dydb_ctx) ) == -1 )
+	{
+		return ret;
+	}
+	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+
+	dydb_ctx_attrX_free(dydb_ctx);
+
+	Aws::DynamoDB::Model::DeleteItemRequest dydb_delitem_req;
+	Aws::DynamoDB::Model::AttributeValue dydb_attr;
+
+	// Set up the request.
+	dydb_delitem_req.SetTableName(dydb_ctx->table_name);
+	dydb_delitem_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
+	dydb_delitem_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
+
+	const Aws::DynamoDB::Model::DeleteItemOutcome& dydb_delitem_res = dydb_ctx->dydb_cli->DeleteItem(dydb_delitem_req);
+	if (dydb_delitem_res.IsSuccess())
+	{
+		DBG_IF_LN("DeleteItem ok !!! (table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+	}
+	else
+	{
+		DBG_ER_LN("DeleteItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_delitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+	}
+
+	return ret;
+}
+
 int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
@@ -102,7 +137,7 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 	}
 	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 
-	clist_free(dydb_ctx->clistAttrX);
+	dydb_ctx_attrX_free(dydb_ctx);
 
 	Aws::DynamoDB::Model::GetItemRequest dydb_getitem_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
@@ -112,13 +147,14 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 	dydb_getitem_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
 	dydb_getitem_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
 
+	dydb_ctx->attr_size = 0;
 	const Aws::DynamoDB::Model::GetItemOutcome& dydb_getitem_res = dydb_ctx->dydb_cli->GetItem(dydb_getitem_req);
 	if (dydb_getitem_res.IsSuccess())
 	{
 		// Reference the retrieved fields/values.
 		const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>& mapAry = dydb_getitem_res.GetResult().GetItem();
 		dydb_ctx->mapAry = &mapAry;
-
+		dydb_ctx->attr_size = dydb_ctx->mapAry->size();
 		if (dydb_ctx->mapAry->size() > 0)
 		{
 			// Output each retrieved field and its value.
@@ -129,18 +165,20 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 				attrX->attr = i.second;
 				clist_push(dydb_ctx->clistAttrX, attrX);
 
-				Aws::Utils::Json::JsonValue jitem  = i.second.Jsonize();
-				//Aws::DynamoDB::Model::ValueType item_type = i.second.GetType();
-				DBG_DB_LN("(cjson: %s, %s: %s)", jitem.View().WriteCompact().c_str(), i.first.c_str(), i.second.GetS().c_str() );
+				if (0)
+				{
+					Aws::Utils::Json::JsonValue jitem  = i.second.Jsonize();
+					//Aws::DynamoDB::Model::ValueType item_type = i.second.GetType();
+					DBG_DB_LN("(cjson: %s, %s: %s)", jitem.View().WriteCompact().c_str(), i.first.c_str(), i.second.GetS().c_str() );
+				}
 			}
 		}
-		DBG_IF_LN("GetItem ok !!! (table_name: %s %zd, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->mapAry->size(), dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		DBG_IF_LN("GetItem ok !!! (table_name: %s, %s: %s, %s: %s, attr_size: %zd)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val, dydb_ctx->attr_size );
 	}
 	else
 	{
 		DBG_ER_LN("GetItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_getitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 	}
-	// snippet-end:[dynamodb.cpp.get_item.code]
 
 	return ret;
 }
