@@ -34,63 +34,69 @@ using namespace std;
 
 void dydb_show_attr(Aws::String& name, Aws::DynamoDB::Model::AttributeValue *attr)
 {
-	Aws::Utils::Json::JsonValue jitem  = attr->Jsonize();
-	Aws::DynamoDB::Model::ValueType atype = attr->GetType();
-	//DBG_IF_LN("(cjson: %s)", cur->attr.SerializeAttribute().c_str() );
-	switch (atype)
+	if (attr)
 	{
-		case Aws::DynamoDB::Model::ValueType::STRING:
-			DBG_IF_LN("(STRING: %s, %s: %s)", jitem.View().WriteCompact().c_str(), name.c_str(), attr->GetS().c_str() );
-			break;
-		case Aws::DynamoDB::Model::ValueType::NUMBER:
-			DBG_IF_LN("(NUMBER: %s, %s: %s)", jitem.View().WriteCompact().c_str(), name.c_str(), attr->GetN().c_str());
-			break;
-		case Aws::DynamoDB::Model::ValueType::BYTEBUFFER:
-			DBG_IF_LN("(BYTEBUFFER: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
-			break;
-		case Aws::DynamoDB::Model::ValueType::STRING_SET:
-			DBG_IF_LN("(STRING_SET: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
-			break;
-		case Aws::DynamoDB::Model::ValueType::NUMBER_SET:
-			DBG_IF_LN("(NUMBER_SET: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
-			break;
-		case Aws::DynamoDB::Model::ValueType::BYTEBUFFER_SET:
-			DBG_IF_LN("(BYTEBUFFER_SET: %s, %s:)", jitem.View().WriteCompact().c_str(), name.c_str());
-			break;
-		case Aws::DynamoDB::Model::ValueType::ATTRIBUTE_MAP:
-			DBG_IF_LN("(ATTRIBUTE_MAP: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
-			break;
-		case Aws::DynamoDB::Model::ValueType::ATTRIBUTE_LIST:
-			{
-				int idx = 0;
-				Aws::Vector<std::shared_ptr<Aws::DynamoDB::Model::AttributeValue>> attrVector = attr->GetL();
-
-				DBG_IF_LN("(ATTRIBUTE_LIST: %s)", jitem.View().WriteCompact().c_str());
-				for(auto elem : attrVector)
+		Aws::Utils::Json::JsonValue jitem  = attr->Jsonize();
+		Aws::DynamoDB::Model::ValueType atype = attr->GetType();
+		//DBG_IF_LN("(cjson: %s)", cur->attr.SerializeAttribute().c_str() );
+		switch (atype)
+		{
+			case Aws::DynamoDB::Model::ValueType::STRING:
+				DBG_IF_LN("(STRING: %s, %s: %s)", jitem.View().WriteCompact().c_str(), name.c_str(), attr->GetS().c_str() );
+				break;
+			case Aws::DynamoDB::Model::ValueType::NUMBER:
+				DBG_IF_LN("(NUMBER: %s, %s: %s)", jitem.View().WriteCompact().c_str(), name.c_str(), attr->GetN().c_str());
+				break;
+			case Aws::DynamoDB::Model::ValueType::BYTEBUFFER:
+				DBG_IF_LN("(BYTEBUFFER: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
+				break;
+			case Aws::DynamoDB::Model::ValueType::STRING_SET:
+				DBG_IF_LN("(STRING_SET: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
+				break;
+			case Aws::DynamoDB::Model::ValueType::NUMBER_SET:
+				DBG_IF_LN("(NUMBER_SET: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
+				break;
+			case Aws::DynamoDB::Model::ValueType::BYTEBUFFER_SET:
+				DBG_IF_LN("(BYTEBUFFER_SET: %s, %s:)", jitem.View().WriteCompact().c_str(), name.c_str());
+				break;
+			case Aws::DynamoDB::Model::ValueType::ATTRIBUTE_MAP:
+				DBG_IF_LN("(ATTRIBUTE_MAP: %s, %s: )", jitem.View().WriteCompact().c_str(), name.c_str());
+				break;
+			case Aws::DynamoDB::Model::ValueType::ATTRIBUTE_LIST:
 				{
-					DBG_IF_LN("(%s[%d]: %s)", name.c_str(), idx, elem->GetS().c_str());
-					idx ++;
+					int idx = 0;
+					Aws::Vector<std::shared_ptr<Aws::DynamoDB::Model::AttributeValue>> attrVector = attr->GetL();
+
+					DBG_IF_LN("(ATTRIBUTE_LIST: %s)", jitem.View().WriteCompact().c_str());
+					for(auto elem : attrVector)
+					{
+						DBG_IF_LN("(%s[%d]: %s)", name.c_str(), idx, elem->GetS().c_str());
+						idx ++;
+					}
 				}
-			}
-			break;
-		case Aws::DynamoDB::Model::ValueType::BOOL:
-			DBG_IF_LN("(BOOL: %s, %s: %d)", jitem.View().WriteCompact().c_str(), name.c_str(), attr->GetBool());
-			break;
-		case Aws::DynamoDB::Model::ValueType::NULLVALUE:
-			DBG_IF_LN("(NULLVALUE: %s, %s: NULLVALUE)", jitem.View().WriteCompact().c_str(), name.c_str());
-			break;
-		default:
-			break;
+				break;
+			case Aws::DynamoDB::Model::ValueType::BOOL:
+				DBG_IF_LN("(BOOL: %s, %s: %d)", jitem.View().WriteCompact().c_str(), name.c_str(), attr->GetBool());
+				break;
+			case Aws::DynamoDB::Model::ValueType::NULLVALUE:
+				DBG_IF_LN("(NULLVALUE: %s, %s: NULLVALUE)", jitem.View().WriteCompact().c_str(), name.c_str());
+				break;
+			default:
+				break;
+		}
 	}
 }
 
 void dydb_show_listX(DyDB_InfoX_t *dydb_ctx)
 {
-	DyDB_AttrX_t *curAttrX = NULL;
-
-	for (curAttrX = (DyDB_AttrX_t *)clist_head(dydb_ctx->clistAttrX); curAttrX != NULL; curAttrX = (DyDB_AttrX_t *)clist_item_next((void *)curAttrX))
+	if (dydb_ctx)
 	{
-		dydb_show_attr(curAttrX->name, &curAttrX->attr);
+		DyDB_AttrX_t *curAttrX = NULL;
+
+		for (curAttrX = (DyDB_AttrX_t *)clist_head(dydb_ctx->clistAttrX); curAttrX != NULL; curAttrX = (DyDB_AttrX_t *)clist_item_next((void *)curAttrX))
+		{
+			dydb_show_attr(curAttrX->name, &curAttrX->attr);
+		}
 	}
 }
 
@@ -281,53 +287,68 @@ int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 
 void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
 {
-	DyDB_AttrX_t *attrX = NULL;
+	if (dydb_ctx)
+	{
+		DyDB_AttrX_t *attrX = NULL;
 
-	// STRING
-	attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
-	attrX->name = key;
-	attrX->attr.SetS( value );
-	clist_push(dydb_ctx->clistAttrX, attrX);
+		// STRING
+		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+		attrX->name = key;
+		attrX->attr.SetS( value );
+		clist_push(dydb_ctx->clistAttrX, attrX);
+	}
 }
 
 void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
 {
-	DyDB_AttrX_t *attrX = NULL;
-
-	// ATTRIBUTE_LIST
-	attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
-	Aws::Vector<std::shared_ptr<Aws::DynamoDB::Model::AttributeValue>> attrVector;
-
-	char *saveptr = NULL;
-	char *token = SAFE_STRTOK_R(value, ";:", &saveptr);
-	while (token)
+	if (dydb_ctx)
 	{
-		std::shared_ptr<Aws::DynamoDB::Model::AttributeValue> attrPtr = Aws::MakeShared<Aws::DynamoDB::Model::AttributeValue>( key );
-		attrPtr->SetS(token);
-		attrVector.push_back(std::make_shared<Aws::DynamoDB::Model::AttributeValue>(*attrPtr));
-		token = SAFE_STRTOK_R(NULL, ";:", &saveptr);
-	}
+		DyDB_AttrX_t *attrX = NULL;
 
-	attrX->name = key;
-	attrX->attr.SetL(attrVector);
-	clist_push(dydb_ctx->clistAttrX, attrX);
+		// ATTRIBUTE_LIST
+		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+		Aws::Vector<std::shared_ptr<Aws::DynamoDB::Model::AttributeValue>> attrVector;
+
+		char *saveptr = NULL;
+		char *token = SAFE_STRTOK_R(value, ";:", &saveptr);
+		while (token)
+		{
+			std::shared_ptr<Aws::DynamoDB::Model::AttributeValue> attrPtr = Aws::MakeShared<Aws::DynamoDB::Model::AttributeValue>( key );
+			attrPtr->SetS(token);
+			attrVector.push_back(std::make_shared<Aws::DynamoDB::Model::AttributeValue>(*attrPtr));
+			token = SAFE_STRTOK_R(NULL, ";:", &saveptr);
+		}
+
+		attrX->name = key;
+		attrX->attr.SetL(attrVector);
+		clist_push(dydb_ctx->clistAttrX, attrX);
+	}
 }
 
 
 void dydb_ctx_attrX_free(DyDB_InfoX_t *dydb_ctx)
 {
-	clist_free(dydb_ctx->clistAttrX);
+	if (dydb_ctx)
+	{
+		clist_free(dydb_ctx->clistAttrX);
+	}
 }
 
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx)
 {
-	dydb_ctx_attrX_free(dydb_ctx);
+	if (dydb_ctx)
+	{
+		dydb_ctx_attrX_free(dydb_ctx);
+	}
 }
 
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli)
 {
-	dydb_ctx->dydb_cli = dydb_cli;
-	CLIST_STRUCT_INIT(dydb_ctx, clistAttrX);
+	if (dydb_ctx)
+	{
+		dydb_ctx->dydb_cli = dydb_cli;
+		CLIST_STRUCT_INIT(dydb_ctx, clistAttrX);
 
-	DYDB_CTX_CHECK(dydb_ctx);
+		DYDB_CTX_CHECK(dydb_ctx);
+	}
 }
