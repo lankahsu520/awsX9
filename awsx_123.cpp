@@ -82,7 +82,7 @@ static void aws_open(void)
 
 	{
 		dydb_get_item(dydb_ctx);
-		dydb_show_listX(dydb_ctx);
+		dydb_show_attrX(dydb_ctx);
 	}
 
 #if (1)
@@ -94,7 +94,14 @@ static void aws_open(void)
 		dydb_update_item(dydb_ctx);
 	}
 	dydb_get_item(dydb_ctx);
-	dydb_show_listX(dydb_ctx);
+	dydb_show_attrX(dydb_ctx);
+#endif
+
+#if (1)
+	{
+		dydb_query_item(dydb_ctx);
+		dydb_show_itemX(dydb_ctx);
+	}
 #endif
 }
 

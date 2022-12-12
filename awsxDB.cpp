@@ -25,6 +25,8 @@
 #include <aws/dynamodb/model/PutItemRequest.h>
 #include <aws/dynamodb/model/PutItemResult.h>
 
+#include <aws/dynamodb/model/QueryRequest.h>
+
 #include <aws/dynamodb/model/UpdateItemRequest.h>
 #include <aws/dynamodb/model/UpdateItemResult.h>
 
@@ -87,7 +89,7 @@ void dydb_show_attr(Aws::String& name, Aws::DynamoDB::Model::AttributeValue *att
 	}
 }
 
-void dydb_show_listX(DyDB_InfoX_t *dydb_ctx)
+void dydb_show_attrX(DyDB_InfoX_t *dydb_ctx)
 {
 	if (dydb_ctx)
 	{
@@ -100,11 +102,33 @@ void dydb_show_listX(DyDB_InfoX_t *dydb_ctx)
 	}
 }
 
+void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx)
+{
+	if (dydb_ctx)
+	{
+		DyDB_ItemX_t *curItemX = NULL;
+
+		int idx = 0;
+		for (curItemX = (DyDB_ItemX_t *)clist_head(dydb_ctx->clistItemX); curItemX != NULL; curItemX = (DyDB_ItemX_t *)clist_item_next((void *)curItemX))
+		{
+			DBG_IF_LN("__________ %03d __________", idx++);
+
+#if (1)
+			DyDB_AttrX_t *curAttrX = NULL;
+			for (curAttrX = (DyDB_AttrX_t *)clist_head(curItemX->clistAttrX); curAttrX != NULL; curAttrX = (DyDB_AttrX_t *)clist_item_next((void *)curAttrX))
+			{
+				dydb_show_attr(curAttrX->name, &curAttrX->attr);
+			}
+#endif
+		}
+	}
+}
+
 int dydb_del_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= DYDB_CTX_CHECK(dydb_ctx) ) == -1 )
+	if ( ( ret= DYDB_CTX_CHECK_ALL(dydb_ctx) ) == -1 )
 	{
 		return ret;
 	}
@@ -137,7 +161,7 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= DYDB_CTX_CHECK(dydb_ctx) ) == -1 )
+	if ( ( ret= DYDB_CTX_CHECK_ALL(dydb_ctx) ) == -1 )
 	{
 		return ret;
 	}
@@ -158,13 +182,13 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 	if (dydb_getitem_res.IsSuccess())
 	{
 		// Reference the retrieved fields/values.
-		const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>& mapAry = dydb_getitem_res.GetResult().GetItem();
-		dydb_ctx->mapAry = &mapAry;
-		dydb_ctx->attr_size = dydb_ctx->mapAry->size();
-		if (dydb_ctx->mapAry->size() > 0)
+		const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>& mapAttr = dydb_getitem_res.GetResult().GetItem();
+		dydb_ctx->mapAttr = &mapAttr;
+		dydb_ctx->attr_size = dydb_ctx->mapAttr->size();
+		if (dydb_ctx->mapAttr->size() > 0)
 		{
 			// Output each retrieved field and its value.
-			for (const auto& i : *dydb_ctx->mapAry)
+			for (const auto& i : *dydb_ctx->mapAttr)
 			{
 				DyDB_AttrX_t *attrX = (DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t)); //SAFE_CALLOC(1, sizeof(DyDB_AttrX_t));
 				attrX->name = i.first;
@@ -193,7 +217,7 @@ int dydb_put_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= DYDB_CTX_CHECK(dydb_ctx) ) == -1 )
+	if ( ( ret= DYDB_CTX_CHECK_ALL(dydb_ctx) ) == -1 )
 	{
 		return ret;
 	}
@@ -228,11 +252,77 @@ int dydb_put_item(DyDB_InfoX_t *dydb_ctx)
 	return ret;
 }
 
+int dydb_query_item(DyDB_InfoX_t *dydb_ctx)
+{
+	int ret = 0;
+
+	if ( ( ret= DYDB_CTX_CHECK_PK(dydb_ctx) ) == -1 )
+	{
+		return ret;
+	}
+	DBG_DB_LN("(table_name: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
+
+	dydb_ctx_itemX_free(dydb_ctx);
+
+	Aws::DynamoDB::Model::QueryRequest dydb_queryitem_req;
+	Aws::DynamoDB::Model::AttributeValue dydb_attr;
+
+	// Set up the request.
+	dydb_queryitem_req.SetTableName(dydb_ctx->table_name);
+
+	// Set query key condition expression
+	dydb_queryitem_req.SetKeyConditionExpression(Aws::String(dydb_ctx->pk) + "= :valueToMatch");
+
+	// Set Expression AttributeValues
+	Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> dydb_map_attr;
+	dydb_map_attr.emplace(":valueToMatch", dydb_ctx->pk_val);
+	dydb_queryitem_req.SetExpressionAttributeValues(dydb_map_attr);
+
+	const Aws::DynamoDB::Model::QueryOutcome dydb_queryitem_res = dydb_ctx->dydb_cli->Query(dydb_queryitem_req);
+	if (!dydb_queryitem_res.IsSuccess())
+	{
+		DBG_ER_LN("Query error - %s !!! (table_name: %s , %s: %s)", dydb_queryitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
+		ret = -1;
+	}
+	else
+	{
+		const Aws::Vector<Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>>& vectorMapAttr = dydb_queryitem_res.GetResult().GetItems();
+		dydb_ctx->vectorMapAttr = &vectorMapAttr;
+		dydb_ctx->items_size = dydb_ctx->vectorMapAttr->size();
+
+		for (const auto& mapAttr : *dydb_ctx->vectorMapAttr)
+		{
+			DyDB_ItemX_t *itemX = (DyDB_ItemX_t*)calloc(1, sizeof(DyDB_ItemX_t));
+			CLIST_STRUCT_INIT(itemX, clistAttrX);
+
+			for (const auto& i : mapAttr)
+			{
+				DyDB_AttrX_t *attrX = (DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t)); //SAFE_CALLOC(1, sizeof(DyDB_AttrX_t));
+				attrX->name = i.first;
+				attrX->attr = i.second;
+				clist_push(itemX->clistAttrX, attrX);
+
+				if (0)
+				{
+					Aws::Utils::Json::JsonValue jitem  = i.second.Jsonize();
+					//Aws::DynamoDB::Model::ValueType item_type = i.second.GetType();
+					DBG_IF_LN("(cjson: %s, %s: %s)", jitem.View().WriteCompact().c_str(), i.first.c_str(), i.second.GetS().c_str() );
+				}
+			}
+			clist_push(dydb_ctx->clistItemX, itemX);
+		}
+
+		DBG_IF_LN("Query ok !!! (table_name: %s, %s: %s, items_size: %zd)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->items_size );
+	}
+
+	return ret;
+}
+
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= DYDB_CTX_CHECK(dydb_ctx) ) == -1 )
+	if ( ( ret= DYDB_CTX_CHECK_ALL(dydb_ctx) ) == -1 )
 	{
 		return ret;
 	}
@@ -334,11 +424,29 @@ void dydb_ctx_attrX_free(DyDB_InfoX_t *dydb_ctx)
 	}
 }
 
+static void itemX_free_cb(void *item)
+{
+	DyDB_ItemX_t *itemX = (DyDB_ItemX_t *)item;
+	if (itemX)
+	{
+		clist_free(itemX->clistAttrX);
+	}
+}
+
+void dydb_ctx_itemX_free(DyDB_InfoX_t *dydb_ctx)
+{
+	if (dydb_ctx)
+	{
+		clist_free_ex(dydb_ctx->clistItemX, itemX_free_cb);
+	}
+}
+
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx)
 {
 	if (dydb_ctx)
 	{
 		dydb_ctx_attrX_free(dydb_ctx);
+		dydb_ctx_itemX_free(dydb_ctx);
 	}
 }
 
@@ -348,7 +456,6 @@ void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_c
 	{
 		dydb_ctx->dydb_cli = dydb_cli;
 		CLIST_STRUCT_INIT(dydb_ctx, clistAttrX);
-
-		DYDB_CTX_CHECK(dydb_ctx);
+		CLIST_STRUCT_INIT(dydb_ctx, clistItemX);
 	}
 }
