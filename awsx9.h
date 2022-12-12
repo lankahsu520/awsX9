@@ -93,6 +93,10 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_put_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx);
 
+void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);
+void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);
+void dydb_ctx_attrX_free(DyDB_InfoX_t *dydb_ctx);
+
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli);
 

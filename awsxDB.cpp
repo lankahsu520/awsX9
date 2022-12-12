@@ -241,9 +241,49 @@ int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 	return ret;
 }
 
-void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx)
+void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
+{
+	DyDB_AttrX_t *attrX = NULL;
+
+	// STRING
+	attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+	attrX->name = key;
+	attrX->attr.SetS( value );
+	clist_push(dydb_ctx->clistAttrX, attrX);
+}
+
+void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
+{
+	DyDB_AttrX_t *attrX = NULL;
+
+	// ATTRIBUTE_LIST
+	attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+	Aws::Vector<std::shared_ptr<Aws::DynamoDB::Model::AttributeValue>> attrVector;
+
+	char *saveptr = NULL;
+	char *token = SAFE_STRTOK_R(value, ";:", &saveptr);
+	while (token)
+	{
+		std::shared_ptr<Aws::DynamoDB::Model::AttributeValue> attrPtr = Aws::MakeShared<Aws::DynamoDB::Model::AttributeValue>( key );
+		attrPtr->SetS(token);
+		attrVector.push_back(std::make_shared<Aws::DynamoDB::Model::AttributeValue>(*attrPtr));
+		token = SAFE_STRTOK_R(NULL, ";:", &saveptr);
+	}
+
+	attrX->name = key;
+	attrX->attr.SetL(attrVector);
+	clist_push(dydb_ctx->clistAttrX, attrX);
+}
+
+
+void dydb_ctx_attrX_free(DyDB_InfoX_t *dydb_ctx)
 {
 	clist_free(dydb_ctx->clistAttrX);
+}
+
+void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx)
+{
+	dydb_ctx_attrX_free(dydb_ctx);
 }
 
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli)
