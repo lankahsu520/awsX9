@@ -83,6 +83,13 @@ typedef enum
 	DyDB_ACT_ID_MAX,
 } DyDB_ACT_ID;
 
+typedef struct DyDB_TableX_Struct
+{
+	void* next;
+
+	Aws::String name;
+} DyDB_TableX_t;
+
 typedef struct DyDB_AttrX_Struct
 {
 	void* next;
@@ -108,6 +115,8 @@ typedef struct DyDB_InfoX_STRUCT
 	const char *sk;
 	const char *sk_val;
 
+	CLIST_STRUCT(clistTableX);
+
 	size_t attr_size; // pk + sk + AttrX
 	const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> *mapAttr;
 	CLIST_STRUCT(clistAttrX);
@@ -125,6 +134,11 @@ typedef struct DyDB_InfoX_STRUCT
 void dydb_show_attr(Aws::String& name, Aws::DynamoDB::Model::AttributeValue *attr);
 void dydb_show_attrX(DyDB_InfoX_t *dydb_ctx);
 void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx);
+void dydb_show_tableX(DyDB_InfoX_t *dydb_ctx);
+
+int dydb_create_table(DyDB_InfoX_t *dydb_ctx);
+int dydb_delete_table(DyDB_InfoX_t *dydb_ctx);
+int dydb_list_table(DyDB_InfoX_t *dydb_ctx);
 
 int dydb_del_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_get_item(DyDB_InfoX_t *dydb_ctx);
@@ -133,6 +147,8 @@ int dydb_query_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_remove_attributes(DyDB_InfoX_t *dydb_ctx, char *attributes);
 int dydb_scan_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx);
+
+void dydb_ctx_tableX_free(DyDB_InfoX_t *dydb_ctx);
 
 void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);
 void dydb_ctx_attrX_addN(DyDB_InfoX_t *dydb_ctx, char *key, int value);

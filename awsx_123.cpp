@@ -40,98 +40,137 @@ static void app_set_quit(int mode)
 
 #define DYDB_TABLE_NAME_MUSIC "Music"
 #define DYDB_PK_NAME_ARTIST "Artist"
-#define DYDB_PK_VAL_ACME_BAND "Lanka"//"Acme Band"
+#define DYDB_PK_VAL_LANKA "Lanka"
+#define DYDB_PK_VAL_ACME_BAND "Acme Band"
+
 #define DYDB_SK_NAME_SONG_TITLE "SongTitle"
-#define DYDB_SK_VAL_HAPPY_DAY "Lanka"//"Lanka520520"//"Happy Day"
+#define DYDB_SK_VAL_LANKA "Lanka"
+#define DYDB_SK_VAL_HAPPY_DAY "Happy Day"
 
 DyDB_InfoX_t dydb_t_Music = {
 	.dydb_cli = NULL,
 	.table_name = DYDB_TABLE_NAME_MUSIC,
 	.pk = DYDB_PK_NAME_ARTIST,
-	.pk_val = DYDB_PK_VAL_ACME_BAND,
+	.pk_val = DYDB_PK_VAL_LANKA,
 	.sk = DYDB_SK_NAME_SONG_TITLE,
+	.sk_val = DYDB_SK_VAL_LANKA,
+};
+
+#define DYDB_TABLE_NAME_DEMO "Demo"
+#define DYDB_PK_NAME_PK "PK"
+#define DYDB_SK_NAME_SK "SK"
+
+DyDB_InfoX_t dydb_t_Demo = {
+	.dydb_cli = NULL,
+	.table_name = DYDB_TABLE_NAME_DEMO,
+	.pk = DYDB_PK_NAME_PK,
+	.pk_val = DYDB_PK_VAL_LANKA,
+	.sk = DYDB_SK_NAME_SK ,
 	.sk_val = DYDB_SK_VAL_HAPPY_DAY,
 };
 
 static void aws_open(void)
 {
-	DyDB_InfoX_t *dydb_ctx = &dydb_t_Music;
+#if (1)
+	{
+		DyDB_InfoX_t *dydb_ctx = &dydb_t_Music;
+#if (1)
+		DBG_WN_LN(">>>>> dydb_del_item <<<<<");
+		{
+			//** del_item **
+			dydb_del_item(dydb_ctx);
+		}
+#endif
 
 #if (1)
-	DBG_WN_LN(">>>>> dydb_del_item <<<<<");
-	{
-		//** del_item **
-		dydb_del_item(dydb_ctx);
+		DBG_WN_LN(">>>>> dydb_put_item <<<<<");
+		{
+			//** put_item **
+			dydb_ctx_attrX_free(dydb_ctx);
+
+			dydb_ctx_attrX_addS(dydb_ctx, (char*)"AlbumTitle", (char*)"Album123");
+
+			dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"1");
+
+			char sponsor_val[LEN_OF_VAL128] = "dog:mouse:tiger";
+			dydb_ctx_attrX_addL_with_composeS(dydb_ctx, (char*)"Sponsor", sponsor_val);
+
+			dydb_put_item(dydb_ctx);
+		}
+		{
+			dydb_get_item(dydb_ctx);
+			dydb_show_attrX(dydb_ctx);
+		}
+#endif
+
+#if (1)
+		DBG_WN_LN(">>>>> dydb_update_item <<<<<");
+		{
+			dydb_ctx_attrX_free(dydb_ctx);
+
+			dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"1");
+			dydb_ctx_attrX_addN(dydb_ctx, (char*)"garbage", 4567);
+
+			dydb_update_item(dydb_ctx);
+		}
+		{
+			dydb_get_item(dydb_ctx);
+			dydb_show_attrX(dydb_ctx);
+		}
+#endif
+
+#if (1)
+		DBG_WN_LN(">>>>> dydb_remove_attributes <<<<<");
+		{
+			char attributes[LEN_OF_VAL1024] = "garbage";
+			dydb_remove_attributes(dydb_ctx, attributes);
+			dydb_get_item(dydb_ctx);
+			dydb_show_attrX(dydb_ctx);
+		}
+#endif
+
+#if (1)
+		DBG_WN_LN(">>>>> dydb_query_item <<<<<");
+		{
+			dydb_query_item(dydb_ctx);
+			dydb_show_itemX(dydb_ctx);
+		}
+#endif
+
+#if (1)
+		DBG_WN_LN(">>>>> dydb_scan_item <<<<<");
+		{
+			dydb_scan_item(dydb_ctx);
+			dydb_show_itemX(dydb_ctx);
+		}
+#endif
 	}
 #endif
 
 #if (1)
-	DBG_WN_LN(">>>>> dydb_put_item <<<<<");
-	{
-		//** put_item **
-		dydb_ctx_attrX_free(dydb_ctx);
+	DyDB_InfoX_t *dydb_ctx = &dydb_t_Demo;
 
-		dydb_ctx_attrX_addS(dydb_ctx, (char*)"AlbumTitle", (char*)"Album123");
+	dydb_list_table(dydb_ctx);
+	dydb_show_tableX(dydb_ctx);
 
-		dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"1");
+	DBG_WN_LN(">>>>> dydb_create_table <<<<<");
+	dydb_create_table(dydb_ctx);
 
-		char sponsor_val[LEN_OF_VAL128] = "dog:mouse:tiger";
-		dydb_ctx_attrX_addL_with_composeS(dydb_ctx, (char*)"Sponsor", sponsor_val);
+	dydb_list_table(dydb_ctx);
+	dydb_show_tableX(dydb_ctx);
 
-		dydb_put_item(dydb_ctx);
-	}
-	{
-		dydb_get_item(dydb_ctx);
-		dydb_show_attrX(dydb_ctx);
-	}
-#endif
+	DBG_WN_LN(">>>>> dydb_delete_table <<<<<");
+	dydb_delete_table(dydb_ctx);
 
-#if (1)
-	DBG_WN_LN(">>>>> dydb_update_item <<<<<");
-	{
-		dydb_ctx_attrX_free(dydb_ctx);
-
-		dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"1");
-		dydb_ctx_attrX_addN(dydb_ctx, (char*)"garbage", 4567);
-
-		dydb_update_item(dydb_ctx);
-	}
-	{
-		dydb_get_item(dydb_ctx);
-		dydb_show_attrX(dydb_ctx);
-	}
-#endif
-
-#if (1)
-	DBG_WN_LN(">>>>> dydb_remove_attributes <<<<<");
-	{
-		char attributes[LEN_OF_VAL1024] = "garbage";
-		dydb_remove_attributes(dydb_ctx, attributes);
-		dydb_get_item(dydb_ctx);
-		dydb_show_attrX(dydb_ctx);
-	}
-#endif
-
-#if (1)
-	DBG_WN_LN(">>>>> dydb_query_item <<<<<");
-	{
-		dydb_query_item(dydb_ctx);
-		dydb_show_itemX(dydb_ctx);
-	}
-#endif
-
-#if (1)
-	DBG_WN_LN(">>>>> dydb_scan_item <<<<<");
-	{
-		dydb_scan_item(dydb_ctx);
-		dydb_show_itemX(dydb_ctx);
-	}
+	dydb_list_table(dydb_ctx);
+	dydb_show_tableX(dydb_ctx);
 #endif
 }
 
 static void aws_free(void)
 {
 	dydb_ctx_free(&dydb_t_Music);
+	dydb_ctx_free(&dydb_t_Demo);
 
 	awsX_free();
 }
@@ -141,6 +180,7 @@ static void aws_init(void)
 	awsX_init();
 
 	dydb_ctx_init(&dydb_t_Music, awsX_cli_get());
+	dydb_ctx_init(&dydb_t_Demo, awsX_cli_get());
 }
 #endif
 
