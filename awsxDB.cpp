@@ -25,6 +25,8 @@
 
 #include <aws/dynamodb/model/DeleteTableRequest.h>
 
+#include <aws/dynamodb/model/DescribeTableRequest.h>
+
 #include <aws/dynamodb/model/ListTablesRequest.h>
 #include <aws/dynamodb/model/ListTablesResult.h>
 
@@ -138,6 +140,29 @@ void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx)
 	}
 }
 
+static void dydb_show_table(const Aws::DynamoDB::Model::TableDescription tableDesc)
+{
+ 	{
+		//const Aws::DynamoDB::Model::TableDescription *tableDesc = dydb_ctx->tableDesc;
+
+		DBG_IF_LN("(Table Name: %s)", tableDesc.GetTableName().c_str());
+		DBG_IF_LN("(Table ARN: %s)", tableDesc.GetTableArn().c_str());
+		DBG_IF_LN("(Table Status: %s)", Aws::DynamoDB::Model::TableStatusMapper::GetNameForTableStatus(tableDesc.GetTableStatus()).c_str());
+		DBG_IF_LN("(Table ItemCount: %lld)", tableDesc.GetItemCount());
+		DBG_IF_LN("(Table Size: %lld bytes)", tableDesc.GetTableSizeBytes());
+
+		const Aws::DynamoDB::Model::ProvisionedThroughputDescription& ptd = tableDesc.GetProvisionedThroughput();
+		DBG_IF_LN("(Throughput Read: %lld, Write: %lld)", ptd.GetReadCapacityUnits(), ptd.GetWriteCapacityUnits());
+
+		const Aws::Vector<Aws::DynamoDB::Model::AttributeDefinition>& ad = tableDesc.GetAttributeDefinitions();
+		for (const auto& a : ad)
+		{
+			Aws::String attrType = Aws::DynamoDB::Model::ScalarAttributeTypeMapper::GetNameForScalarAttributeType(a.GetAttributeType());
+			DBG_IF_LN("(Attributes[%s]: %s)", attrType.c_str(), a.GetAttributeName().c_str() );
+		}
+	}
+}
+
 void dydb_show_tableX(DyDB_InfoX_t *dydb_ctx)
 {
 	if (dydb_ctx)
@@ -163,7 +188,7 @@ int dydb_create_table(DyDB_InfoX_t *dydb_ctx)
 	}
 	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 
-	dydb_ctx_attrX_free(dydb_ctx);
+	dydb_ctx_tableX_free(dydb_ctx);
 
 	Aws::DynamoDB::Model::CreateTableRequest dydb_create_table_req;
 
@@ -195,6 +220,7 @@ int dydb_create_table(DyDB_InfoX_t *dydb_ctx)
 	else
 	{
 		DBG_ER_LN("CreateTable error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_create_table_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		ret = -1;
 	}
 
 	return ret;
@@ -210,7 +236,7 @@ int dydb_delete_table(DyDB_InfoX_t *dydb_ctx)
 	}
 	DBG_DB_LN("(table_name: %s)", dydb_ctx->table_name );
 
-	dydb_ctx_itemX_free(dydb_ctx);
+	dydb_ctx_tableX_free(dydb_ctx);
 
 	Aws::DynamoDB::Model::DeleteTableRequest dydb_delete_table_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
@@ -227,6 +253,51 @@ int dydb_delete_table(DyDB_InfoX_t *dydb_ctx)
 	else
 	{
 		DBG_IF_LN("DeleteTable ok !!! (table_name: %s)", dydb_ctx->table_name );
+
+		int retry = 10;
+		while (dydb_describe_table(dydb_ctx, 0) == 0)
+		{
+			usleep(100*1000);
+			retry--;
+			if (retry<=0) break;
+		}
+	}
+
+	return ret;
+}
+
+int dydb_describe_table(DyDB_InfoX_t *dydb_ctx, int show)
+{
+	int ret = 0;
+
+	if ( ( ret= DYDB_CTX_CHECK_TABLE(dydb_ctx) ) == -1 )
+	{
+		return ret;
+	}
+	DBG_DB_LN("(table_name: %s)", dydb_ctx->table_name );
+
+	dydb_ctx_tableX_free(dydb_ctx);
+
+	Aws::DynamoDB::Model::DescribeTableRequest dydb_describe_table_req;
+
+	// Set up the request.
+	dydb_describe_table_req.SetTableName(dydb_ctx->table_name);
+
+	const Aws::DynamoDB::Model::DescribeTableOutcome& dydb_describe_table_res = dydb_ctx->dydb_cli->DescribeTable(dydb_describe_table_req);
+	if (dydb_describe_table_res.IsSuccess())
+	{
+		DBG_IF_LN("DescribeTable ok !!! (table_name: %s)", dydb_ctx->table_name);
+
+		if (show)
+		{
+			const Aws::DynamoDB::Model::TableDescription& tableDesc = dydb_describe_table_res.GetResult().GetTable();
+			dydb_show_table(tableDesc);
+		}
+	}
+	else
+	{
+		DBG_ER_LN("DescribeTable error - %s !!! (table_name: %s)", dydb_describe_table_res.GetError().GetMessage().c_str(), dydb_ctx->table_name);
+		ret = -1;
 	}
 
 	return ret;
@@ -295,6 +366,7 @@ int dydb_del_item(DyDB_InfoX_t *dydb_ctx)
 	else
 	{
 		DBG_ER_LN("DeleteItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_del_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		ret = -1;
 	}
 
 	return ret;
@@ -311,6 +383,7 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 
 	dydb_ctx_attrX_free(dydb_ctx);
+	dydb_ctx->mapAttr = NULL;
 
 	Aws::DynamoDB::Model::GetItemRequest dydb_get_item_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
@@ -351,6 +424,7 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 	else
 	{
 		DBG_ER_LN("GetItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_get_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		ret = -1;
 	}
 
 	return ret;
@@ -407,6 +481,7 @@ int dydb_query_item(DyDB_InfoX_t *dydb_ctx)
 	DBG_DB_LN("(table_name: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
 
 	dydb_ctx_itemX_free(dydb_ctx);
+	dydb_ctx->vectorMapAttr = NULL;
 
 	Aws::DynamoDB::Model::QueryRequest dydb_query_item_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
