@@ -148,22 +148,31 @@ static void aws_open(void)
 #endif
 
 #if (1)
-	DyDB_InfoX_t *dydb_ctx = &dydb_t_Demo;
+	{
+		DyDB_InfoX_t *dydb_ctx = &dydb_t_Demo;
+#if (1)
 
-	dydb_list_table(dydb_ctx);
-	dydb_show_tableX(dydb_ctx);
+		dydb_list_table(dydb_ctx);
+		dydb_show_tableX(dydb_ctx);
 
-	DBG_WN_LN(">>>>> dydb_create_table <<<<<");
-	dydb_create_table(dydb_ctx);
+		DBG_WN_LN(">>>>> dydb_create_table <<<<<");
+		dydb_create_table(dydb_ctx);
 
-	dydb_list_table(dydb_ctx);
-	dydb_show_tableX(dydb_ctx);
+		dydb_list_table(dydb_ctx);
+		dydb_show_tableX(dydb_ctx);
+#endif
 
-	DBG_WN_LN(">>>>> dydb_delete_table <<<<<");
-	dydb_delete_table(dydb_ctx);
+		DBG_WN_LN(">>>>> dydb_describe_table <<<<<");
+		dydb_describe_table(dydb_ctx, 1);
 
-	dydb_list_table(dydb_ctx);
-	dydb_show_tableX(dydb_ctx);
+#if (1)
+		DBG_WN_LN(">>>>> dydb_delete_table <<<<<");
+		dydb_delete_table(dydb_ctx);
+
+		dydb_list_table(dydb_ctx);
+		dydb_show_tableX(dydb_ctx);
+#endif
+	}
 #endif
 }
 

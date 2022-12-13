@@ -138,6 +138,7 @@ void dydb_show_tableX(DyDB_InfoX_t *dydb_ctx);
 
 int dydb_create_table(DyDB_InfoX_t *dydb_ctx);
 int dydb_delete_table(DyDB_InfoX_t *dydb_ctx);
+int dydb_describe_table(DyDB_InfoX_t *dydb_ctx, int show);
 int dydb_list_table(DyDB_InfoX_t *dydb_ctx);
 
 int dydb_del_item(DyDB_InfoX_t *dydb_ctx);
