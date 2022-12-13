@@ -59,7 +59,18 @@ extern "C" {
 			|| ( ptr->pk == NULL ) \
 			|| ( ptr->pk_val == NULL ) ) \
 		{ \
-			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p, sk: %p, sk_val: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val); \
+			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val); \
+			__ret = -1; \
+		} \
+		__ret; \
+	})
+
+#define DYDB_CTX_CHECK_TABLE(ptr) \
+	({ int __ret = 0; \
+		if ( ( ptr->dydb_cli == NULL ) \
+			|| ( ptr->table_name == NULL ) ) \
+		{ \
+			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name); \
 			__ret = -1; \
 		} \
 		__ret; \
@@ -119,6 +130,7 @@ int dydb_del_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_get_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_put_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_query_item(DyDB_InfoX_t *dydb_ctx);
+int dydb_scan_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx);
 
 void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);

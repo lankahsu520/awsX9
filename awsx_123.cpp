@@ -59,7 +59,7 @@ static void aws_open(void)
 
 #if (1)
 	{
-		//** put_item **
+		//** del_item **
 		dydb_del_item(dydb_ctx);
 	}
 #endif
@@ -100,6 +100,13 @@ static void aws_open(void)
 #if (1)
 	{
 		dydb_query_item(dydb_ctx);
+		dydb_show_itemX(dydb_ctx);
+	}
+#endif
+
+#if (1)
+	{
+		dydb_scan_item(dydb_ctx);
 		dydb_show_itemX(dydb_ctx);
 	}
 #endif
