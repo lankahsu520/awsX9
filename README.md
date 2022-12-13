@@ -18,13 +18,13 @@ flowchart LR
 
 	subgraph Item
 		dydb_del_item
-		dydb_put_item --> dydb_show_attrX
+		dydb_put_item
+		dydb_update_item
+		dydb_remove_attributes
+
 		dydb_get_item --> dydb_show_attrX
-		dydb_update_item --> dydb_show_attrX
 		dydb_query_item --> dydb_show_itemX
 		dydb_scan_item --> dydb_show_itemX
-	
-		dydb_remove_attributes --> dydb_show_attrX
 	end
 ```
 # 2. Depend on
