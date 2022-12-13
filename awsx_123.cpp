@@ -58,6 +58,7 @@ static void aws_open(void)
 	DyDB_InfoX_t *dydb_ctx = &dydb_t_Music;
 
 #if (1)
+	DBG_WN_LN(">>>>> dydb_del_item <<<<<");
 	{
 		//** del_item **
 		dydb_del_item(dydb_ctx);
@@ -65,6 +66,7 @@ static void aws_open(void)
 #endif
 
 #if (1)
+	DBG_WN_LN(">>>>> dydb_put_item <<<<<");
 	{
 		//** put_item **
 		dydb_ctx_attrX_free(dydb_ctx);
@@ -78,26 +80,40 @@ static void aws_open(void)
 
 		dydb_put_item(dydb_ctx);
 	}
-#endif
-
 	{
 		dydb_get_item(dydb_ctx);
 		dydb_show_attrX(dydb_ctx);
 	}
-
-#if (1)
-	{
-		dydb_ctx_attrX_free(dydb_ctx);
-
-		dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"2");
-
-		dydb_update_item(dydb_ctx);
-	}
-	dydb_get_item(dydb_ctx);
-	dydb_show_attrX(dydb_ctx);
 #endif
 
 #if (1)
+	DBG_WN_LN(">>>>> dydb_update_item <<<<<");
+	{
+		dydb_ctx_attrX_free(dydb_ctx);
+
+		dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"1");
+		dydb_ctx_attrX_addN(dydb_ctx, (char*)"garbage", 4567);
+
+		dydb_update_item(dydb_ctx);
+	}
+	{
+		dydb_get_item(dydb_ctx);
+		dydb_show_attrX(dydb_ctx);
+	}
+#endif
+
+#if (1)
+	DBG_WN_LN(">>>>> dydb_remove_attributes <<<<<");
+	{
+		char attributes[LEN_OF_VAL1024] = "garbage";
+		dydb_remove_attributes(dydb_ctx, attributes);
+		dydb_get_item(dydb_ctx);
+		dydb_show_attrX(dydb_ctx);
+	}
+#endif
+
+#if (1)
+	DBG_WN_LN(">>>>> dydb_query_item <<<<<");
 	{
 		dydb_query_item(dydb_ctx);
 		dydb_show_itemX(dydb_ctx);
@@ -105,6 +121,7 @@ static void aws_open(void)
 #endif
 
 #if (1)
+	DBG_WN_LN(">>>>> dydb_scan_item <<<<<");
 	{
 		dydb_scan_item(dydb_ctx);
 		dydb_show_itemX(dydb_ctx);

@@ -325,6 +325,44 @@ int dydb_query_item(DyDB_InfoX_t *dydb_ctx)
 	return ret;
 }
 
+// deleting attributes from an item
+// https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html#Expressions.UpdateExpressions.REMOVE
+int dydb_remove_attributes(DyDB_InfoX_t *dydb_ctx, char *attributes)
+{
+	int ret = 0;
+
+	if ( ( ret= DYDB_CTX_CHECK_ALL(dydb_ctx) ) == -1 )
+	{
+		return ret;
+	}
+	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+
+	Aws::DynamoDB::Model::UpdateItemRequest dydb_update_item_req;
+	Aws::DynamoDB::Model::AttributeValue dydb_attr;
+
+	// Set up the request.
+	dydb_update_item_req.SetTableName(dydb_ctx->table_name);
+	dydb_update_item_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
+	dydb_update_item_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
+
+	Aws::String dydb_update_expression("REMOVE " + Aws::String(attributes));
+	dydb_update_item_req.SetUpdateExpression(dydb_update_expression);
+
+	const Aws::DynamoDB::Model::UpdateItemOutcome dydb_update_item_res = dydb_ctx->dydb_cli->UpdateItem(dydb_update_item_req);
+	if (!dydb_update_item_res.IsSuccess())
+	{
+		DBG_ER_LN("UpdateItem error - %s !!! (table_name: %s , %s: %s, %s: %s), (%s)", dydb_update_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val, dydb_update_expression.c_str() );
+		ret = -1;
+	}
+	else
+	{
+		DBG_IF_LN("UpdateItem ok !!! (table_name: %s, %s: %s, %s: %s), (%s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val, dydb_update_expression.c_str() );
+	}
+
+	return ret;
+}
+
+
 int dydb_scan_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
@@ -346,7 +384,7 @@ int dydb_scan_item(DyDB_InfoX_t *dydb_ctx)
 	const Aws::DynamoDB::Model::ScanOutcome dydb_scan_item_res = dydb_ctx->dydb_cli->Scan(dydb_scan_item_req);
 	if (!dydb_scan_item_res.IsSuccess())
 	{
-		DBG_ER_LN("Query error - %s !!! (table_name: %s , %s: %s)", dydb_scan_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
+		DBG_ER_LN("Scan error - %s !!! (table_name: %s , %s: %s)", dydb_scan_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
 		ret = -1;
 	}
 	else
@@ -379,13 +417,14 @@ int dydb_scan_item(DyDB_InfoX_t *dydb_ctx)
 				clist_push(dydb_ctx->clistItemX, itemX);
 			}
 		}
-		DBG_IF_LN("Query ok !!! (table_name: %s, %s: %s, items_size: %zd)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->items_size );
+		DBG_IF_LN("Scan ok !!! (table_name: %s, %s: %s, items_size: %zd)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->items_size );
 	}
 
 	return ret;
 }
 
 // create an item or update the current data
+// https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html#Expressions.UpdateExpressions.SET
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
@@ -406,38 +445,46 @@ int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 
 	DyDB_AttrX_t *cur = NULL;
 
+	//Aws::String dydb_update_expression("SET #0=:value0, #1=:value1");
+	Aws::String dydb_update_expression("SET");
+	dydb_update_item_req.SetUpdateExpression(dydb_update_expression);
+
+	Aws::Map<Aws::String, Aws::String> mapAttrKey;
+	Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> mapAttr;
+
+	int idx = 0;
 	for (cur = (DyDB_AttrX_t *)clist_head(dydb_ctx->clistAttrX); cur != NULL; cur = (DyDB_AttrX_t *)clist_item_next((void *)cur))
 	{
-		Aws::String dydb_update_expression("SET #a = :valueA");
-		dydb_update_item_req.SetUpdateExpression(dydb_update_expression);
+		Aws::String key( "#" + std::to_string(idx));
+		Aws::String value( ":value" + std::to_string(idx) );
 
-		// Construct attribute name argument
-		// Note: Setting the ExpressionAttributeNames argument is required only
-		// when the name is a reserved word, such as "default". Otherwise, the 
-		// name can be included in the update_expression, as in 
-		// "SET MyAttributeName = :valueA"
-		Aws::Map<Aws::String, Aws::String> expressionAttributeNames;
-		expressionAttributeNames["#a"] = cur->name;
-		dydb_update_item_req.SetExpressionAttributeNames(expressionAttributeNames);
+		if (idx==0)
+		{
+			dydb_update_expression.append( " " + key + "=" + value);
+		}
+		else
+		{
+			dydb_update_expression.append( "," + key + "=" + value);
+		}
 
-		// Construct attribute value argument.
-		Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> expressionAttributeValues;
-		expressionAttributeValues[":valueA"] = cur->attr;
-		dydb_update_item_req.SetExpressionAttributeValues(expressionAttributeValues);
+		mapAttrKey[ key ] = cur->name;
+		mapAttr[ value ] = cur->attr;
 
-		// only update 1*item.
-		break;
+		idx ++;
 	}
+	dydb_update_item_req.SetExpressionAttributeNames(mapAttrKey);
+	dydb_update_item_req.SetExpressionAttributeValues(mapAttr);
+	dydb_update_item_req.SetUpdateExpression(dydb_update_expression);
 
 	const Aws::DynamoDB::Model::UpdateItemOutcome dydb_update_item_res = dydb_ctx->dydb_cli->UpdateItem(dydb_update_item_req);
 	if (!dydb_update_item_res.IsSuccess())
 	{
-		DBG_ER_LN("UpdateItem error - %s !!! (table_name: %s , %s: %s, %s: %s)", dydb_update_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		DBG_ER_LN("UpdateItem error - %s !!! (table_name: %s , %s: %s, %s: %s), (%s)", dydb_update_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val, dydb_update_expression.c_str() );
 		ret = -1;
 	}
 	else
 	{
-		DBG_IF_LN("UpdateItem ok !!! (table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		DBG_IF_LN("UpdateItem ok !!! (table_name: %s, %s: %s, %s: %s), (%s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val, dydb_update_expression.c_str() );
 	}
 
 	return ret;
@@ -453,6 +500,20 @@ void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
 		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
 		attrX->name = key;
 		attrX->attr.SetS( value );
+		clist_push(dydb_ctx->clistAttrX, attrX);
+	}
+}
+
+void dydb_ctx_attrX_addN(DyDB_InfoX_t *dydb_ctx, char *key, int value)
+{
+	if (dydb_ctx)
+	{
+		DyDB_AttrX_t *attrX = NULL;
+
+		// STRING
+		attrX =(DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t));
+		attrX->name = key;
+		attrX->attr.SetN( value );
 		clist_push(dydb_ctx->clistAttrX, attrX);
 	}
 }

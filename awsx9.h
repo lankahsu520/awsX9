@@ -130,10 +130,12 @@ int dydb_del_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_get_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_put_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_query_item(DyDB_InfoX_t *dydb_ctx);
+int dydb_remove_attributes(DyDB_InfoX_t *dydb_ctx, char *attributes);
 int dydb_scan_item(DyDB_InfoX_t *dydb_ctx);
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx);
 
 void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);
+void dydb_ctx_attrX_addN(DyDB_InfoX_t *dydb_ctx, char *key, int value);
 void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *value);
 void dydb_ctx_attrX_free(DyDB_InfoX_t *dydb_ctx);
 
