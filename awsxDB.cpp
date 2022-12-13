@@ -27,6 +27,8 @@
 
 #include <aws/dynamodb/model/QueryRequest.h>
 
+#include <aws/dynamodb/model/ScanRequest.h>
+
 #include <aws/dynamodb/model/UpdateItemRequest.h>
 #include <aws/dynamodb/model/UpdateItemResult.h>
 
@@ -108,6 +110,7 @@ void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx)
 	{
 		DyDB_ItemX_t *curItemX = NULL;
 
+		DBG_IF_LN("——————————————————————————————————————————————————");
 		int idx = 0;
 		for (curItemX = (DyDB_ItemX_t *)clist_head(dydb_ctx->clistItemX); curItemX != NULL; curItemX = (DyDB_ItemX_t *)clist_item_next((void *)curItemX))
 		{
@@ -121,6 +124,7 @@ void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx)
 			}
 #endif
 		}
+		DBG_IF_LN("__________ End __________");
 	}
 }
 
@@ -136,22 +140,22 @@ int dydb_del_item(DyDB_InfoX_t *dydb_ctx)
 
 	dydb_ctx_attrX_free(dydb_ctx);
 
-	Aws::DynamoDB::Model::DeleteItemRequest dydb_delitem_req;
+	Aws::DynamoDB::Model::DeleteItemRequest dydb_del_item_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
 
 	// Set up the request.
-	dydb_delitem_req.SetTableName(dydb_ctx->table_name);
-	dydb_delitem_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
-	dydb_delitem_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
+	dydb_del_item_req.SetTableName(dydb_ctx->table_name);
+	dydb_del_item_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
+	dydb_del_item_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
 
-	const Aws::DynamoDB::Model::DeleteItemOutcome& dydb_delitem_res = dydb_ctx->dydb_cli->DeleteItem(dydb_delitem_req);
-	if (dydb_delitem_res.IsSuccess())
+	const Aws::DynamoDB::Model::DeleteItemOutcome& dydb_del_item_res = dydb_ctx->dydb_cli->DeleteItem(dydb_del_item_req);
+	if (dydb_del_item_res.IsSuccess())
 	{
 		DBG_IF_LN("DeleteItem ok !!! (table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 	}
 	else
 	{
-		DBG_ER_LN("DeleteItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_delitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		DBG_ER_LN("DeleteItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_del_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 	}
 
 	return ret;
@@ -169,20 +173,20 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 
 	dydb_ctx_attrX_free(dydb_ctx);
 
-	Aws::DynamoDB::Model::GetItemRequest dydb_getitem_req;
+	Aws::DynamoDB::Model::GetItemRequest dydb_get_item_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
 
 	// Set up the request.
-	dydb_getitem_req.SetTableName(dydb_ctx->table_name);
-	dydb_getitem_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
-	dydb_getitem_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
+	dydb_get_item_req.SetTableName(dydb_ctx->table_name);
+	dydb_get_item_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
+	dydb_get_item_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
 
 	dydb_ctx->attr_size = 0;
-	const Aws::DynamoDB::Model::GetItemOutcome& dydb_getitem_res = dydb_ctx->dydb_cli->GetItem(dydb_getitem_req);
-	if (dydb_getitem_res.IsSuccess())
+	const Aws::DynamoDB::Model::GetItemOutcome& dydb_get_item_res = dydb_ctx->dydb_cli->GetItem(dydb_get_item_req);
+	if (dydb_get_item_res.IsSuccess())
 	{
 		// Reference the retrieved fields/values.
-		const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>& mapAttr = dydb_getitem_res.GetResult().GetItem();
+		const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>& mapAttr = dydb_get_item_res.GetResult().GetItem();
 		dydb_ctx->mapAttr = &mapAttr;
 		dydb_ctx->attr_size = dydb_ctx->mapAttr->size();
 		if (dydb_ctx->mapAttr->size() > 0)
@@ -207,12 +211,13 @@ int dydb_get_item(DyDB_InfoX_t *dydb_ctx)
 	}
 	else
 	{
-		DBG_ER_LN("GetItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_getitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		DBG_ER_LN("GetItem error - %s !!! (table_name: %s, %s: %s, %s: %s)", dydb_get_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 	}
 
 	return ret;
 }
 
+// create an item or replace all data
 int dydb_put_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
@@ -223,25 +228,25 @@ int dydb_put_item(DyDB_InfoX_t *dydb_ctx)
 	}
 	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 
-	Aws::DynamoDB::Model::PutItemRequest dydb_putitem_req;
+	Aws::DynamoDB::Model::PutItemRequest dydb_put_item_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
 
 	// Set up the request.
-	dydb_putitem_req.SetTableName(dydb_ctx->table_name);
-	dydb_putitem_req.AddItem(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
-	dydb_putitem_req.AddItem(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
+	dydb_put_item_req.SetTableName(dydb_ctx->table_name);
+	dydb_put_item_req.AddItem(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
+	dydb_put_item_req.AddItem(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
 
 	DyDB_AttrX_t *cur = NULL;
 
 	for (cur = (DyDB_AttrX_t *)clist_head(dydb_ctx->clistAttrX); cur != NULL; cur = (DyDB_AttrX_t *)clist_item_next((void *)cur))
 	{
-		dydb_putitem_req.AddItem(cur->name, cur->attr);
+		dydb_put_item_req.AddItem(cur->name, cur->attr);
 	}
 
-	const Aws::DynamoDB::Model::PutItemOutcome dydb_putitem_res = dydb_ctx->dydb_cli->PutItem(dydb_putitem_req);
-	if (!dydb_putitem_res.IsSuccess())
+	const Aws::DynamoDB::Model::PutItemOutcome dydb_put_item_res = dydb_ctx->dydb_cli->PutItem(dydb_put_item_req);
+	if (!dydb_put_item_res.IsSuccess())
 	{
-		DBG_ER_LN("PutItem error - %s !!! (table_name: %s , %s: %s, %s: %s)", dydb_putitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		DBG_ER_LN("PutItem error - %s !!! (table_name: %s , %s: %s, %s: %s)", dydb_put_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 		ret = -1;
 	}
 	else
@@ -264,60 +269,123 @@ int dydb_query_item(DyDB_InfoX_t *dydb_ctx)
 
 	dydb_ctx_itemX_free(dydb_ctx);
 
-	Aws::DynamoDB::Model::QueryRequest dydb_queryitem_req;
+	Aws::DynamoDB::Model::QueryRequest dydb_query_item_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
 
 	// Set up the request.
-	dydb_queryitem_req.SetTableName(dydb_ctx->table_name);
+	dydb_query_item_req.SetTableName(dydb_ctx->table_name);
 
 	// Set query key condition expression
-	dydb_queryitem_req.SetKeyConditionExpression(Aws::String(dydb_ctx->pk) + "= :valueToMatch");
+	dydb_query_item_req.SetKeyConditionExpression(Aws::String(dydb_ctx->pk) + "= :valueToMatch");
 
 	// Set Expression AttributeValues
 	Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> dydb_map_attr;
 	dydb_map_attr.emplace(":valueToMatch", dydb_ctx->pk_val);
-	dydb_queryitem_req.SetExpressionAttributeValues(dydb_map_attr);
+	dydb_query_item_req.SetExpressionAttributeValues(dydb_map_attr);
 
-	const Aws::DynamoDB::Model::QueryOutcome dydb_queryitem_res = dydb_ctx->dydb_cli->Query(dydb_queryitem_req);
-	if (!dydb_queryitem_res.IsSuccess())
+	const Aws::DynamoDB::Model::QueryOutcome dydb_query_item_res = dydb_ctx->dydb_cli->Query(dydb_query_item_req);
+	if (!dydb_query_item_res.IsSuccess())
 	{
-		DBG_ER_LN("Query error - %s !!! (table_name: %s , %s: %s)", dydb_queryitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
+		DBG_ER_LN("Query error - %s !!! (table_name: %s , %s: %s)", dydb_query_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
 		ret = -1;
 	}
 	else
 	{
-		const Aws::Vector<Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>>& vectorMapAttr = dydb_queryitem_res.GetResult().GetItems();
+		const Aws::Vector<Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>>& vectorMapAttr = dydb_query_item_res.GetResult().GetItems();
 		dydb_ctx->vectorMapAttr = &vectorMapAttr;
 		dydb_ctx->items_size = dydb_ctx->vectorMapAttr->size();
 
-		for (const auto& mapAttr : *dydb_ctx->vectorMapAttr)
+		if ( dydb_ctx->items_size > 0 )
 		{
-			DyDB_ItemX_t *itemX = (DyDB_ItemX_t*)calloc(1, sizeof(DyDB_ItemX_t));
-			CLIST_STRUCT_INIT(itemX, clistAttrX);
-
-			for (const auto& i : mapAttr)
+			for (const auto& mapAttr : *dydb_ctx->vectorMapAttr)
 			{
-				DyDB_AttrX_t *attrX = (DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t)); //SAFE_CALLOC(1, sizeof(DyDB_AttrX_t));
-				attrX->name = i.first;
-				attrX->attr = i.second;
-				clist_push(itemX->clistAttrX, attrX);
+				DyDB_ItemX_t *itemX = (DyDB_ItemX_t*)calloc(1, sizeof(DyDB_ItemX_t));
+				CLIST_STRUCT_INIT(itemX, clistAttrX);
 
-				if (0)
+				for (const auto& i : mapAttr)
 				{
-					Aws::Utils::Json::JsonValue jitem  = i.second.Jsonize();
-					//Aws::DynamoDB::Model::ValueType item_type = i.second.GetType();
-					DBG_IF_LN("(cjson: %s, %s: %s)", jitem.View().WriteCompact().c_str(), i.first.c_str(), i.second.GetS().c_str() );
-				}
-			}
-			clist_push(dydb_ctx->clistItemX, itemX);
-		}
+					DyDB_AttrX_t *attrX = (DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t)); //SAFE_CALLOC(1, sizeof(DyDB_AttrX_t));
+					attrX->name = i.first;
+					attrX->attr = i.second;
+					clist_push(itemX->clistAttrX, attrX);
 
+					if (0)
+					{
+						Aws::Utils::Json::JsonValue jitem  = i.second.Jsonize();
+						//Aws::DynamoDB::Model::ValueType item_type = i.second.GetType();
+						DBG_IF_LN("(cjson: %s, %s: %s)", jitem.View().WriteCompact().c_str(), i.first.c_str(), i.second.GetS().c_str() );
+					}
+				}
+				clist_push(dydb_ctx->clistItemX, itemX);
+			}
+		}
 		DBG_IF_LN("Query ok !!! (table_name: %s, %s: %s, items_size: %zd)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->items_size );
 	}
 
 	return ret;
 }
 
+int dydb_scan_item(DyDB_InfoX_t *dydb_ctx)
+{
+	int ret = 0;
+
+	if ( ( ret= DYDB_CTX_CHECK_TABLE(dydb_ctx) ) == -1 )
+	{
+		return ret;
+	}
+	DBG_DB_LN("(table_name: %s)", dydb_ctx->table_name );
+
+	dydb_ctx_itemX_free(dydb_ctx);
+
+	Aws::DynamoDB::Model::ScanRequest dydb_scan_item_req;
+	Aws::DynamoDB::Model::AttributeValue dydb_attr;
+
+	// Set up the request.
+	dydb_scan_item_req.SetTableName(dydb_ctx->table_name);
+
+	const Aws::DynamoDB::Model::ScanOutcome dydb_scan_item_res = dydb_ctx->dydb_cli->Scan(dydb_scan_item_req);
+	if (!dydb_scan_item_res.IsSuccess())
+	{
+		DBG_ER_LN("Query error - %s !!! (table_name: %s , %s: %s)", dydb_scan_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val );
+		ret = -1;
+	}
+	else
+	{
+		const Aws::Vector<Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue>>& vectorMapAttr = dydb_scan_item_res.GetResult().GetItems();
+		dydb_ctx->vectorMapAttr = &vectorMapAttr;
+		dydb_ctx->items_size = dydb_ctx->vectorMapAttr->size();
+
+		if (dydb_ctx->items_size > 0)
+		{
+			for (const auto& mapAttr : *dydb_ctx->vectorMapAttr)
+			{
+				DyDB_ItemX_t *itemX = (DyDB_ItemX_t*)calloc(1, sizeof(DyDB_ItemX_t));
+				CLIST_STRUCT_INIT(itemX, clistAttrX);
+
+				for (const auto& i : mapAttr)
+				{
+					DyDB_AttrX_t *attrX = (DyDB_AttrX_t*)calloc(1, sizeof(DyDB_AttrX_t)); //SAFE_CALLOC(1, sizeof(DyDB_AttrX_t));
+					attrX->name = i.first;
+					attrX->attr = i.second;
+					clist_push(itemX->clistAttrX, attrX);
+
+					if (0)
+					{
+						Aws::Utils::Json::JsonValue jitem  = i.second.Jsonize();
+						//Aws::DynamoDB::Model::ValueType item_type = i.second.GetType();
+						DBG_IF_LN("(cjson: %s, %s: %s)", jitem.View().WriteCompact().c_str(), i.first.c_str(), i.second.GetS().c_str() );
+					}
+				}
+				clist_push(dydb_ctx->clistItemX, itemX);
+			}
+		}
+		DBG_IF_LN("Query ok !!! (table_name: %s, %s: %s, items_size: %zd)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->items_size );
+	}
+
+	return ret;
+}
+
+// create an item or update the current data
 int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
@@ -328,20 +396,20 @@ int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 	}
 	DBG_DB_LN("(table_name: %s, %s: %s, %s: %s)", dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 
-	Aws::DynamoDB::Model::UpdateItemRequest dydb_updateitem_req;
+	Aws::DynamoDB::Model::UpdateItemRequest dydb_update_item_req;
 	Aws::DynamoDB::Model::AttributeValue dydb_attr;
 
 	// Set up the request.
-	dydb_updateitem_req.SetTableName(dydb_ctx->table_name);
-	dydb_updateitem_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
-	dydb_updateitem_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
+	dydb_update_item_req.SetTableName(dydb_ctx->table_name);
+	dydb_update_item_req.AddKey(dydb_ctx->pk, dydb_attr.SetS(dydb_ctx->pk_val));
+	dydb_update_item_req.AddKey(dydb_ctx->sk, dydb_attr.SetS(dydb_ctx->sk_val));
 
 	DyDB_AttrX_t *cur = NULL;
 
 	for (cur = (DyDB_AttrX_t *)clist_head(dydb_ctx->clistAttrX); cur != NULL; cur = (DyDB_AttrX_t *)clist_item_next((void *)cur))
 	{
 		Aws::String dydb_update_expression("SET #a = :valueA");
-		dydb_updateitem_req.SetUpdateExpression(dydb_update_expression);
+		dydb_update_item_req.SetUpdateExpression(dydb_update_expression);
 
 		// Construct attribute name argument
 		// Note: Setting the ExpressionAttributeNames argument is required only
@@ -350,21 +418,21 @@ int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 		// "SET MyAttributeName = :valueA"
 		Aws::Map<Aws::String, Aws::String> expressionAttributeNames;
 		expressionAttributeNames["#a"] = cur->name;
-		dydb_updateitem_req.SetExpressionAttributeNames(expressionAttributeNames);
+		dydb_update_item_req.SetExpressionAttributeNames(expressionAttributeNames);
 
 		// Construct attribute value argument.
 		Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> expressionAttributeValues;
 		expressionAttributeValues[":valueA"] = cur->attr;
-		dydb_updateitem_req.SetExpressionAttributeValues(expressionAttributeValues);
+		dydb_update_item_req.SetExpressionAttributeValues(expressionAttributeValues);
 
 		// only update 1*item.
 		break;
 	}
 
-	const Aws::DynamoDB::Model::UpdateItemOutcome dydb_updateitem_res = dydb_ctx->dydb_cli->UpdateItem(dydb_updateitem_req);
-	if (!dydb_updateitem_res.IsSuccess())
+	const Aws::DynamoDB::Model::UpdateItemOutcome dydb_update_item_res = dydb_ctx->dydb_cli->UpdateItem(dydb_update_item_req);
+	if (!dydb_update_item_res.IsSuccess())
 	{
-		DBG_ER_LN("UpdateItem error - %s !!! (table_name: %s , %s: %s, %s: %s)", dydb_updateitem_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
+		DBG_ER_LN("UpdateItem error - %s !!! (table_name: %s , %s: %s, %s: %s)", dydb_update_item_res.GetError().GetMessage().c_str(), dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val );
 		ret = -1;
 	}
 	else

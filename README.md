@@ -23,6 +23,19 @@ $ make
 
 # 5. Example or Usage
 - awsx_123 - an example. to get item from Amazon DynamoDB.
+```mermaid
+flowchart LR
+	subgraph Show
+		dydb_show_attrX
+		dydb_show_itemX --> dydb_show_attrX
+	end
+	dydb_del_item
+	dydb_put_item --> dydb_show_attrX
+	dydb_get_item --> dydb_show_attrX
+	dydb_update_item --> dydb_show_attrX
+	dydb_query_item --> dydb_show_itemX
+	dydb_scan_item --> dydb_show_itemX
+```
 ```json
 {
  "Artist": "Lanka",
@@ -52,49 +65,95 @@ $ make
 
 ```bash
 $ ./awsx_123
-[38555/38555] dydb_del_item:150 - DeleteItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
-[38555/38555] dydb_put_item:249 - PutItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
-[38555/38555] dydb_get_item:206 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"1"}, Awards: 1)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[38555/38555] dydb_show_attr:72 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[38555/38555] dydb_show_attr:75 - (Sponsor[0]: dog)
-[38555/38555] dydb_show_attr:75 - (Sponsor[1]: mouse)
-[38555/38555] dydb_show_attr:75 - (Sponsor[2]: tiger)
-[38555/38555] dydb_update_item:372 - UpdateItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
-[38555/38555] dydb_get_item:206 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"2"}, Awards: 2)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[38555/38555] dydb_show_attr:72 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[38555/38555] dydb_show_attr:75 - (Sponsor[0]: dog)
-[38555/38555] dydb_show_attr:75 - (Sponsor[1]: mouse)
-[38555/38555] dydb_show_attr:75 - (Sponsor[2]: tiger)
-[38555/38555] dydb_query_item:315 - Query ok !!! (table_name: Music, Artist: Lanka, items_size: 2)
-[38555/38555] dydb_show_itemX:114 - __________ 000 __________
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"2"}, Awards: 2)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[38555/38555] dydb_show_attr:72 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[38555/38555] dydb_show_attr:75 - (Sponsor[0]: dog)
-[38555/38555] dydb_show_attr:75 - (Sponsor[1]: mouse)
-[38555/38555] dydb_show_attr:75 - (Sponsor[2]: tiger)
-[38555/38555] dydb_show_itemX:114 - __________ 001 __________
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka520"}, AlbumTitle: Lanka520)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"1"}, Awards: 1)
-[38555/38555] dydb_show_attr:47 - (STRING: {"S":"Lanka520520"}, SongTitle: Lanka520520)
-[38555/38555] dydb_show_attr:72 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"cat"},{"S":"mouse"},{"S":"stoat"},{"S":"snake"}]})
-[38555/38555] dydb_show_attr:75 - (Sponsor[0]: dog)
-[38555/38555] dydb_show_attr:75 - (Sponsor[1]: cat)
-[38555/38555] dydb_show_attr:75 - (Sponsor[2]: mouse)
-[38555/38555] dydb_show_attr:75 - (Sponsor[3]: stoat)
-[38555/38555] dydb_show_attr:75 - (Sponsor[4]: snake)
-[38555/38555] main:248 - Bye-Bye !!!
+[258426/258426] dydb_del_item:154 - DeleteItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[258426/258426] dydb_put_item:254 - PutItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[258426/258426] dydb_get_item:210 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"1"}, Awards: 1)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[258426/258426] dydb_show_attr:74 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[258426/258426] dydb_show_attr:77 - (Sponsor[0]: dog)
+[258426/258426] dydb_show_attr:77 - (Sponsor[1]: mouse)
+[258426/258426] dydb_show_attr:77 - (Sponsor[2]: tiger)
+[258426/258426] dydb_update_item:440 - UpdateItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[258426/258426] dydb_get_item:210 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"2"}, Awards: 2)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[258426/258426] dydb_show_attr:74 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[258426/258426] dydb_show_attr:77 - (Sponsor[0]: dog)
+[258426/258426] dydb_show_attr:77 - (Sponsor[1]: mouse)
+[258426/258426] dydb_show_attr:77 - (Sponsor[2]: tiger)
+[258426/258426] dydb_query_item:322 - Query ok !!! (table_name: Music, Artist: Lanka, items_size: 2)
+[258426/258426] dydb_show_itemX:113 - ——————————————————————————————————————————————————
+[258426/258426] dydb_show_itemX:117 - __________ 000 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"2"}, Awards: 2)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[258426/258426] dydb_show_attr:74 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[258426/258426] dydb_show_attr:77 - (Sponsor[0]: dog)
+[258426/258426] dydb_show_attr:77 - (Sponsor[1]: mouse)
+[258426/258426] dydb_show_attr:77 - (Sponsor[2]: tiger)
+[258426/258426] dydb_show_itemX:117 - __________ 001 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka520"}, AlbumTitle: Lanka520)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"1"}, Awards: 1)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka520520"}, SongTitle: Lanka520520)
+[258426/258426] dydb_show_attr:74 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"cat"},{"S":"mouse"},{"S":"stoat"},{"S":"snake"}]})
+[258426/258426] dydb_show_attr:77 - (Sponsor[0]: dog)
+[258426/258426] dydb_show_attr:77 - (Sponsor[1]: cat)
+[258426/258426] dydb_show_attr:77 - (Sponsor[2]: mouse)
+[258426/258426] dydb_show_attr:77 - (Sponsor[3]: stoat)
+[258426/258426] dydb_show_attr:77 - (Sponsor[4]: snake)
+[258426/258426] dydb_show_itemX:127 - __________ End __________
+[258426/258426] dydb_scan_item:382 - Query ok !!! (table_name: Music, Artist: Lanka, items_size: 6)
+[258426/258426] dydb_show_itemX:113 - ——————————————————————————————————————————————————
+[258426/258426] dydb_show_itemX:117 - __________ 000 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Somewhat Famous"}, AlbumTitle: Somewhat Famous)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"No One You Know"}, Artist: No One You Know)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"1"}, Awards: 1)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Call Me Today"}, SongTitle: Call Me Today)
+[258426/258426] dydb_show_itemX:117 - __________ 001 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Somewhat Famous"}, AlbumTitle: Somewhat Famous)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"No One You Know"}, Artist: No One You Know)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"2"}, Awards: 2)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Howdy"}, SongTitle: Howdy)
+[258426/258426] dydb_show_itemX:117 - __________ 002 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"2"}, Awards: 2)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[258426/258426] dydb_show_attr:74 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[258426/258426] dydb_show_attr:77 - (Sponsor[0]: dog)
+[258426/258426] dydb_show_attr:77 - (Sponsor[1]: mouse)
+[258426/258426] dydb_show_attr:77 - (Sponsor[2]: tiger)
+[258426/258426] dydb_show_itemX:117 - __________ 003 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka520"}, AlbumTitle: Lanka520)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"1"}, Awards: 1)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Lanka520520"}, SongTitle: Lanka520520)
+[258426/258426] dydb_show_attr:74 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"cat"},{"S":"mouse"},{"S":"stoat"},{"S":"snake"}]})
+[258426/258426] dydb_show_attr:77 - (Sponsor[0]: dog)
+[258426/258426] dydb_show_attr:77 - (Sponsor[1]: cat)
+[258426/258426] dydb_show_attr:77 - (Sponsor[2]: mouse)
+[258426/258426] dydb_show_attr:77 - (Sponsor[3]: stoat)
+[258426/258426] dydb_show_attr:77 - (Sponsor[4]: snake)
+[258426/258426] dydb_show_itemX:117 - __________ 004 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Songs About Life"}, AlbumTitle: Songs About Life)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"10"}, Awards: 10)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Happy Day"}, SongTitle: Happy Day)
+[258426/258426] dydb_show_itemX:117 - __________ 005 __________
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Another Album Title"}, AlbumTitle: Another Album Title)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"8"}, Awards: 8)
+[258426/258426] dydb_show_attr:49 - (STRING: {"S":"PartiQL Rocks"}, SongTitle: PartiQL Rocks)
+[258426/258426] dydb_show_itemX:127 - __________ End __________
+[258426/258426] main:255 - Bye-Bye !!!
+
 ```
 
 # 6. License
