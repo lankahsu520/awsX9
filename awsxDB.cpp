@@ -122,7 +122,7 @@ void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx)
 	{
 		DyDB_ItemX_t *curItemX = NULL;
 
-		DBG_IF_LN("——————————————————————————————————————————————————");
+		DBG_IF_LN("———————————————————————————————————————————————————");
 		int idx = 0;
 		for (curItemX = (DyDB_ItemX_t *)clist_head(dydb_ctx->clistItemX); curItemX != NULL; curItemX = (DyDB_ItemX_t *)clist_item_next((void *)curItemX))
 		{
@@ -136,7 +136,7 @@ void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx)
 			}
 #endif
 		}
-		DBG_IF_LN("__________ End __________");
+		DBG_IF_LN("_______________________ End _______________________");
 	}
 }
 
@@ -169,12 +169,12 @@ void dydb_show_tableX(DyDB_InfoX_t *dydb_ctx)
 	{
 		DyDB_TableX_t *curTableX = NULL;
 
-		DBG_IF_LN("——————————————————————————————————————————————————");
+		DBG_IF_LN("———————————————————————————————————————————————————");
 		for (curTableX = (DyDB_TableX_t *)clist_head(dydb_ctx->clistTableX); curTableX != NULL; curTableX = (DyDB_TableX_t *)clist_item_next((void *)curTableX))
 		{
 			DBG_IF_LN("(tablename: %s)", curTableX->name.c_str());
 		}
-		DBG_IF_LN("__________ End __________");
+		DBG_IF_LN("_______________________ End _______________________");
 	}
 }
 
@@ -702,7 +702,7 @@ int dydb_update_item(DyDB_InfoX_t *dydb_ctx)
 
 void dydb_ctx_tableX_free(DyDB_InfoX_t *dydb_ctx)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->dydb_cli) )
 	{
 		clist_free(dydb_ctx->clistTableX);
 	}
@@ -710,7 +710,7 @@ void dydb_ctx_tableX_free(DyDB_InfoX_t *dydb_ctx)
 
 void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->dydb_cli) )
 	{
 		DyDB_AttrX_t *attrX = NULL;
 
@@ -724,7 +724,7 @@ void dydb_ctx_attrX_addS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
 
 void dydb_ctx_attrX_addN(DyDB_InfoX_t *dydb_ctx, char *key, int value)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->dydb_cli) )
 	{
 		DyDB_AttrX_t *attrX = NULL;
 
@@ -738,7 +738,7 @@ void dydb_ctx_attrX_addN(DyDB_InfoX_t *dydb_ctx, char *key, int value)
 
 void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->dydb_cli) )
 	{
 		DyDB_AttrX_t *attrX = NULL;
 
@@ -764,7 +764,7 @@ void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *
 
 void dydb_ctx_attrX_free(DyDB_InfoX_t *dydb_ctx)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->dydb_cli) )
 	{
 		clist_free(dydb_ctx->clistAttrX);
 	}
@@ -781,7 +781,7 @@ static void itemX_free_cb(void *item)
 
 void dydb_ctx_itemX_free(DyDB_InfoX_t *dydb_ctx)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->dydb_cli) )
 	{
 		clist_free_ex(dydb_ctx->clistItemX, itemX_free_cb);
 	}
