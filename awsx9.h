@@ -116,6 +116,7 @@ typedef struct DyDB_InfoX_STRUCT
 	const char *sk_val;
 
 	CLIST_STRUCT(clistTableX);
+	Aws::DynamoDB::Model::TableDescription tableDesc;
 
 	size_t attr_size; // pk + sk + AttrX
 	const Aws::Map<Aws::String, Aws::DynamoDB::Model::AttributeValue> *mapAttr;
@@ -134,11 +135,12 @@ typedef struct DyDB_InfoX_STRUCT
 void dydb_show_attr(Aws::String& name, Aws::DynamoDB::Model::AttributeValue *attr);
 void dydb_show_attrX(DyDB_InfoX_t *dydb_ctx);
 void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx);
+void dydb_show_table(const Aws::DynamoDB::Model::TableDescription tableDesc);
 void dydb_show_tableX(DyDB_InfoX_t *dydb_ctx);
 
 int dydb_create_table(DyDB_InfoX_t *dydb_ctx);
 int dydb_delete_table(DyDB_InfoX_t *dydb_ctx);
-int dydb_describe_table(DyDB_InfoX_t *dydb_ctx, int show);
+int dydb_describe_table(DyDB_InfoX_t *dydb_ctx);
 int dydb_list_table(DyDB_InfoX_t *dydb_ctx);
 
 int dydb_del_item(DyDB_InfoX_t *dydb_ctx);

@@ -151,7 +151,6 @@ static void aws_open(void)
 	{
 		DyDB_InfoX_t *dydb_ctx = &dydb_t_Demo;
 #if (1)
-
 		dydb_list_table(dydb_ctx);
 		dydb_show_tableX(dydb_ctx);
 
@@ -163,7 +162,8 @@ static void aws_open(void)
 #endif
 
 		DBG_WN_LN(">>>>> dydb_describe_table <<<<<");
-		dydb_describe_table(dydb_ctx, 1);
+		dydb_describe_table(dydb_ctx);
+		dydb_show_table(dydb_ctx->tableDesc);
 
 #if (1)
 		DBG_WN_LN(">>>>> dydb_delete_table <<<<<");

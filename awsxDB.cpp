@@ -140,7 +140,7 @@ void dydb_show_itemX(DyDB_InfoX_t *dydb_ctx)
 	}
 }
 
-static void dydb_show_table(const Aws::DynamoDB::Model::TableDescription tableDesc)
+void dydb_show_table(const Aws::DynamoDB::Model::TableDescription tableDesc)
 {
  	{
 		//const Aws::DynamoDB::Model::TableDescription *tableDesc = dydb_ctx->tableDesc;
@@ -255,7 +255,7 @@ int dydb_delete_table(DyDB_InfoX_t *dydb_ctx)
 		DBG_IF_LN("DeleteTable ok !!! (table_name: %s)", dydb_ctx->table_name );
 
 		int retry = 10;
-		while (dydb_describe_table(dydb_ctx, 0) == 0)
+		while (dydb_describe_table(dydb_ctx) == 0)
 		{
 			usleep(100*1000);
 			retry--;
@@ -266,7 +266,7 @@ int dydb_delete_table(DyDB_InfoX_t *dydb_ctx)
 	return ret;
 }
 
-int dydb_describe_table(DyDB_InfoX_t *dydb_ctx, int show)
+int dydb_describe_table(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
 
@@ -286,13 +286,9 @@ int dydb_describe_table(DyDB_InfoX_t *dydb_ctx, int show)
 	const Aws::DynamoDB::Model::DescribeTableOutcome& dydb_describe_table_res = dydb_ctx->dydb_cli->DescribeTable(dydb_describe_table_req);
 	if (dydb_describe_table_res.IsSuccess())
 	{
+		const Aws::DynamoDB::Model::TableDescription& tableDesc = dydb_describe_table_res.GetResult().GetTable();
+		dydb_ctx->tableDesc = tableDesc;
 		DBG_IF_LN("DescribeTable ok !!! (table_name: %s)", dydb_ctx->table_name);
-
-		if (show)
-		{
-			const Aws::DynamoDB::Model::TableDescription& tableDesc = dydb_describe_table_res.GetResult().GetTable();
-			dydb_show_table(tableDesc);
-		}
 	}
 	else
 	{
