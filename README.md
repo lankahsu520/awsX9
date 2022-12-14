@@ -4,27 +4,38 @@ awsX9 is an api of [AWS SDK (C++)](https://github.com/aws/aws-sdk-cpp). We can s
 Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-CLI.md) and [helper_AWS-SDK.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-SDK.md).
 
 ```mermaid
-flowchart LR
-	subgraph Show
-		dydb_show_attrX
-		dydb_show_itemX --> dydb_show_attrX
-		dydb_show_tableX
-	end
-	subgraph Table
-    	dydb_create_table
-		dydb_delete_table
-		dydb_list_table --> dydb_show_tableX
+flowchart TD
+	subgraph Amazon
+		DynamoDB
 	end
 
-	subgraph Item
-		dydb_del_item
-		dydb_put_item
-		dydb_update_item
-		dydb_remove_attributes
+	DynamoDB <--> awsxDB
+	subgraph awsX9
+		subgraph awsxDB
+			subgraph Show
+				dydb_show_attrX
+				dydb_show_itemX --- dydb_show_attrX
+				dydb_show_tableX
+				dydb_show_table
+			end
+			subgraph Table
+				dydb_create_table
+				dydb_delete_table
+				dydb_list_table --- dydb_show_tableX
+				dydb_describe_table --- dydb_show_table
+			end
 
-		dydb_get_item --> dydb_show_attrX
-		dydb_query_item --> dydb_show_itemX
-		dydb_scan_item --> dydb_show_itemX
+			subgraph Item
+				dydb_del_item
+				dydb_put_item
+				dydb_update_item
+				dydb_remove_attributes
+
+				dydb_get_item --- dydb_show_attrX
+				dydb_query_item --- dydb_show_itemX
+				dydb_scan_item --- dydb_show_itemX
+			end
+		end
 	end
 ```
 # 2. Depend on
@@ -166,7 +177,7 @@ $ ./awsx_123
 [7709/7709] aws_open:165 - >>>>> dydb_describe_table <<<<<
 [7709/7709] dydb_describe_table:286 - DescribeTable ok !!! (table_name: Demo)
 [7709/7709] dydb_show_table:148 - (Table Name: Demo)
-[7709/7709] dydb_show_table:149 - (Table ARN: arn:aws:dynamodb:eu-west-1:877409152866:table/Demo)
+[7709/7709] dydb_show_table:149 - (Table ARN: arn:aws:dynamodb:eu-west-1:877409487449:table/Demo)
 [7709/7709] dydb_show_table:150 - (Table Status: CREATING)
 [7709/7709] dydb_show_table:151 - (Table ItemCount: 0)
 [7709/7709] dydb_show_table:152 - (Table Size: 0 bytes)
