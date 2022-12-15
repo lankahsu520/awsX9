@@ -1,5 +1,5 @@
 # 1. Overview
-awsX9 is an api of [AWS SDK (C++)](https://github.com/aws/aws-sdk-cpp). We can save our time from learning AWS SDK.
+awsX9 is an api of [AWS SDK (C++)](https://github.com/aws/aws-sdk-cpp) . We can save our time from learning AWS SDK.
 
 Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-CLI.md) and [helper_AWS-SDK.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-SDK.md).
 
@@ -40,9 +40,11 @@ flowchart TD
 ```
 # 2. Depend on
 - [utilx9](https://github.com/lankahsu520/utilx9)
-- [AWS SDK (C++)](https://www.silabs.com/wireless/z-wave)
+- [AWS SDK (C++)](https://www.silabs.com/wireless/z-wave) (aws-sdk-cpp-1.10.9)
 
 # 3. Current Status
+
+#### A. DynamoDB
 
 
 
