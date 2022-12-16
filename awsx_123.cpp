@@ -21,7 +21,7 @@
 
 #define TAG "awsBowser"
 
-#define USB_AWS
+#define USB_AWSX9
 
 // ** app **
 static int is_quit = 0;
@@ -36,7 +36,7 @@ static void app_set_quit(int mode)
 	is_quit = mode;
 }
 
-#ifdef USB_AWS
+#ifdef USB_AWSX9
 
 #define DYDB_TABLE_NAME_MUSIC "Music"
 #define DYDB_PK_NAME_ARTIST "Artist"
@@ -199,7 +199,7 @@ static void app_stop(void)
 	{
 		app_set_quit(1);
 
-#ifdef USB_AWS
+#ifdef USB_AWSX9
 		aws_free();
 #endif
 	}
@@ -207,7 +207,7 @@ static void app_stop(void)
 
 static void app_loop(void)
 {
-#ifdef USB_AWS
+#ifdef USB_AWSX9
 	aws_open();
 #endif
 }
@@ -302,7 +302,7 @@ static void app_ParseArguments(int argc, char **argv)
 
 int main(int argc, char** argv)
 {
-#ifdef USB_AWS
+#ifdef USB_AWSX9
 	// must run before app_ParseArguments
 	aws_init();
 #endif
