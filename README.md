@@ -46,8 +46,6 @@ flowchart TD
 
 #### A. DynamoDB
 
-
-
 # 4. Build
 
    ```bash
@@ -205,3 +203,10 @@ awsX9 is under the New BSD License (BSD-3-Clause).
 
 # 7. Documentation
 Run an example and read it.
+#### A. DynamoDB
+
+| DynamoDB | SQL Database |
+| -------- | -------------- |
+| Table | Table |
+| Item | Row |
+| Attribute | Column |
