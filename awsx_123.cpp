@@ -76,7 +76,7 @@ DyDB_InfoX_t dydb_t_Demo = {
 	.sk_val = DYDB_SK_VAL_HAPPY_DAY,
 };
 
-static void aws_dynamodb_test(void)
+static void aws_dynamodb_demo(void)
 {
 	DBG_IF_LN(DBG_TXT_ENTER);
 
@@ -194,20 +194,24 @@ S3_InfoX_t s3_t_Demo = {
 	.s3_cli = NULL,
 	.isinit = 0,
 	.isfree = 0,
-	{.bucket = "utilx9"},
-	{.key = "111.txt"},
-	{.saveto = "222.txt"},
 };
-
-static void aws_s3_test(void)
+	
+static void aws_s3_demo(void)
 {
 	DBG_IF_LN(DBG_TXT_ENTER);
 #if (1)
 	{
 		S3_InfoX_t *s3_ctx = &s3_t_Demo;
+
 		s3_ctx_init(s3_ctx, awsX_s3_cli_get());
-		DBG_WN_LN(">>>>> s3_get_file <<<<<");
+
+		DBG_WN_LN(">>>>> s3_get_file (bucket/key -> local) <<<<<");
+		s3_ctx_init_get(s3_ctx, (char *)"utilx9", (char *)"111.txt", (char *)"222.txt");
 		s3_get_file(s3_ctx);
+
+		DBG_WN_LN(">>>>> s3_copy_file (bucket/key -> bucket/key) <<<<<");
+		s3_ctx_init_copy(s3_ctx, (char *)"utilx9", (char *)"111.txt", (char *)"utilx9", (char *)"222.txt");
+		s3_copy_file(s3_ctx);
 	}
 #endif
 }
@@ -216,11 +220,11 @@ static void aws_open(void)
 {
 	if ( test_DynamoDB == 1 )
 	{
-		aws_dynamodb_test();
+		aws_dynamodb_demo();
 	}
 	if ( test_S3 == 1 )
 	{
-		aws_s3_test();
+		aws_s3_demo();
 	}
 }
 
@@ -230,6 +234,10 @@ static void aws_free(void)
 	{
 		dydb_ctx_free(&dydb_t_Music);
 		dydb_ctx_free(&dydb_t_Demo);
+	}
+	if ( test_S3 == 1 )
+	{
+		s3_ctx_free(&s3_t_Demo);
 	}
 
 	awsX_free();
