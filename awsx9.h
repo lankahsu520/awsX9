@@ -213,10 +213,12 @@ void dydb_ctx_itemX_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli);
 
-int s3_copy_file(S3_InfoX_t *s3_ctx);
-int s3_get_file(S3_InfoX_t *s3_ctx);
+int s3_copy_object(S3_InfoX_t *s3_ctx);
+int s3_delete_object(S3_InfoX_t *s3_ctx);
+int s3_get_object(S3_InfoX_t *s3_ctx);
 
 void s3_ctx_init_copy(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key, char *to_bucket, char *to_key);
+void s3_ctx_init_delete(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key);
 void s3_ctx_init_get(S3_InfoX_t *s3_ctx, char *bucket, char *key, char *localname);
 void s3_ctx_free(S3_InfoX_t *s3_ctx);
 void s3_ctx_init(S3_InfoX_t *s3_ctx, Aws::S3::S3Client *dydb_cli);

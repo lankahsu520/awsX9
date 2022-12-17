@@ -64,8 +64,9 @@ flowchart TD
 
 	subgraph awsX9
 		subgraph awsxS3
-			s3_get_file
-			s3_copy_file
+			s3_copy_object
+			s3_delete_object
+			s3_get_object
 		end
 	end
 
@@ -105,14 +106,17 @@ Example:
 ```
 ```bash
 $ ./awsx_123 -s
-[550426/550426] aws_s3_demo:201 - __________ Enter __________
-[550426/550426] aws_s3_demo:208 - >>>>> s3_get_file (bucket/key -> local) <<<<<
-[550426/550426] s3_get_file:98 - (bucket: utilx9/111.txt -> localname: 222.txt)
-[550426/550426] s3_get_file:111 - GetObject ok !!! (bucket: utilx9/111.txt -> saveto: 222.txt)
-[550426/550426] aws_s3_demo:212 - >>>>> s3_copy_file (bucket/key -> bucket/key) <<<<<
-[550426/550426] s3_copy_file:53 - (bucket: utilx9/111.txt -> localname: utilx9)
-[550426/550426] s3_copy_file:66 - CopyObject ok !!! (bucket: utilx9/111.txt -> bucket: utilx9/222.txt)
-[550426/550426] main:396 - Bye-Bye !!!
+[550760/550760] aws_s3_demo:201 - __________ Enter __________
+[550760/550760] aws_s3_demo:208 - >>>>> s3_get_object (bucket/key -> local) <<<<<
+[550760/550760] s3_get_object:138 - (bucket: utilx9/111.txt -> localname: 222.txt)
+[550760/550760] s3_get_object:151 - GetObject ok !!! (bucket: utilx9/111.txt -> saveto: 222.txt)
+[550760/550760] aws_s3_demo:212 - >>>>> s3_get_object (bucket/key -> NULL) <<<<<
+[550760/550760] s3_delete_object:96 - (bucket: utilx9/222.txt -> NULL)
+[550760/550760] s3_delete_object:106 - DeleteObject ok !!! (bucket: utilx9/222.txt -> NULL)
+[550760/550760] aws_s3_demo:216 - >>>>> s3_copy_object (bucket/key -> bucket/key) <<<<<
+[550760/550760] s3_copy_object:54 - (bucket: utilx9/111.txt -> localname: utilx9)
+[550760/550760] s3_copy_object:67 - CopyObject ok !!! (bucket: utilx9/111.txt -> bucket: utilx9/222.txt)
+[550760/550760] main:400 - Bye-Bye !!!
 
 ```
 
