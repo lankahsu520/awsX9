@@ -30,6 +30,7 @@ ARFLAGS = rcs
 #** LIBXXX_OBJS **
 LIBXXX_OBJS += \
 							awsxDB.cpp.o \
+							awsxS3.cpp.o \
 							awsx9.cpp.o
 
 #** LIBXXX_yes **

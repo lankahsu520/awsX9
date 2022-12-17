@@ -6,10 +6,10 @@ Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob
 ```mermaid
 flowchart TD
 	subgraph Amazon
+		S3
 		DynamoDB
 	end
 
-	DynamoDB <--> awsxDB
 	subgraph awsX9
 		subgraph awsxDB
 			subgraph Show
@@ -36,7 +36,23 @@ flowchart TD
 				dydb_scan_item --- dydb_show_itemX
 			end
 		end
+	
+		subgraph awsxS3
+			s3_get_file
+		end
 	end
+	DynamoDB <--> awsxDB
+	awsxS3<-->S3
+
+	classDef yellow fill:#FFFFCC
+	classDef pink fill:#FFCCCC
+	classDef blue fill:#0000FF
+	classDef lightblue fill:#ADD8E6
+
+	class DynamoDB pink
+	class awsxDB pink
+	class S3 lightblue
+	class awsxS3 lightblue
 ```
 # 2. Depend on
 - [utilx9](https://github.com/lankahsu520/utilx9)
@@ -45,6 +61,8 @@ flowchart TD
 # 3. Current Status
 
 #### A. DynamoDB
+
+#### B. S3
 
 # 4. Build
 
@@ -61,138 +79,159 @@ $ make
 - awsx_123 - an example. to get item from Amazon DynamoDB.
 ```bash
 $ ./awsx_123
-[7709/7709] aws_open:78 - >>>>> dydb_del_item <<<<<
-[7709/7709] dydb_del_item:361 - DeleteItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
-[7709/7709] aws_open:86 - >>>>> dydb_put_item <<<<<
-[7709/7709] dydb_put_item:464 - PutItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
-[7709/7709] dydb_get_item:419 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[7709/7709] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[7709/7709] dydb_show_attr:89 - (Sponsor[0]: dog)
-[7709/7709] dydb_show_attr:89 - (Sponsor[1]: mouse)
-[7709/7709] dydb_show_attr:89 - (Sponsor[2]: tiger)
-[7709/7709] aws_open:107 - >>>>> dydb_update_item <<<<<
-[7709/7709] dydb_update_item:698 - UpdateItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka), (SET #0=:value0,#1=:value1)
-[7709/7709] dydb_get_item:419 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 6)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[7709/7709] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[7709/7709] dydb_show_attr:89 - (Sponsor[0]: dog)
-[7709/7709] dydb_show_attr:89 - (Sponsor[1]: mouse)
-[7709/7709] dydb_show_attr:89 - (Sponsor[2]: tiger)
-[7709/7709] dydb_show_attr:64 - (NUMBER: {"N":"4567"}, garbage: 4567)
-[7709/7709] aws_open:123 - >>>>> dydb_remove_attributes <<<<<
-[7709/7709] dydb_remove_attributes:570 - UpdateItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka), (REMOVE garbage)
-[7709/7709] dydb_get_item:419 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[7709/7709] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[7709/7709] dydb_show_attr:89 - (Sponsor[0]: dog)
-[7709/7709] dydb_show_attr:89 - (Sponsor[1]: mouse)
-[7709/7709] dydb_show_attr:89 - (Sponsor[2]: tiger)
-[7709/7709] aws_open:133 - >>>>> dydb_query_item <<<<<
-[7709/7709] dydb_query_item:533 - Query ok !!! (table_name: Music, Artist: Lanka, items_size: 2)
-[7709/7709] dydb_show_itemX:125 - ——————————————————————————————————————————————————
-[7709/7709] dydb_show_itemX:129 - __________ 000 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[7709/7709] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[7709/7709] dydb_show_attr:89 - (Sponsor[0]: dog)
-[7709/7709] dydb_show_attr:89 - (Sponsor[1]: mouse)
-[7709/7709] dydb_show_attr:89 - (Sponsor[2]: tiger)
-[7709/7709] dydb_show_itemX:129 - __________ 001 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka520"}, AlbumTitle: Lanka520)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka520520"}, SongTitle: Lanka520520)
-[7709/7709] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"cat"},{"S":"mouse"},{"S":"stoat"},{"S":"snake"}]})
-[7709/7709] dydb_show_attr:89 - (Sponsor[0]: dog)
-[7709/7709] dydb_show_attr:89 - (Sponsor[1]: cat)
-[7709/7709] dydb_show_attr:89 - (Sponsor[2]: mouse)
-[7709/7709] dydb_show_attr:89 - (Sponsor[3]: stoat)
-[7709/7709] dydb_show_attr:89 - (Sponsor[4]: snake)
-[7709/7709] dydb_show_itemX:139 - __________ End __________
-[7709/7709] aws_open:141 - >>>>> dydb_scan_item <<<<<
-[7709/7709] dydb_scan_item:631 - Scan ok !!! (table_name: Music, Artist: Lanka, items_size: 6)
-[7709/7709] dydb_show_itemX:125 - ——————————————————————————————————————————————————
-[7709/7709] dydb_show_itemX:129 - __________ 000 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Somewhat Famous"}, AlbumTitle: Somewhat Famous)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"No One You Know"}, Artist: No One You Know)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Call Me Today"}, SongTitle: Call Me Today)
-[7709/7709] dydb_show_itemX:129 - __________ 001 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Somewhat Famous"}, AlbumTitle: Somewhat Famous)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"No One You Know"}, Artist: No One You Know)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"2"}, Awards: 2)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Howdy"}, SongTitle: Howdy)
-[7709/7709] dydb_show_itemX:129 - __________ 002 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
-[7709/7709] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
-[7709/7709] dydb_show_attr:89 - (Sponsor[0]: dog)
-[7709/7709] dydb_show_attr:89 - (Sponsor[1]: mouse)
-[7709/7709] dydb_show_attr:89 - (Sponsor[2]: tiger)
-[7709/7709] dydb_show_itemX:129 - __________ 003 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka520"}, AlbumTitle: Lanka520)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Lanka520520"}, SongTitle: Lanka520520)
-[7709/7709] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"cat"},{"S":"mouse"},{"S":"stoat"},{"S":"snake"}]})
-[7709/7709] dydb_show_attr:89 - (Sponsor[0]: dog)
-[7709/7709] dydb_show_attr:89 - (Sponsor[1]: cat)
-[7709/7709] dydb_show_attr:89 - (Sponsor[2]: mouse)
-[7709/7709] dydb_show_attr:89 - (Sponsor[3]: stoat)
-[7709/7709] dydb_show_attr:89 - (Sponsor[4]: snake)
-[7709/7709] dydb_show_itemX:129 - __________ 004 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Songs About Life"}, AlbumTitle: Songs About Life)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"10"}, Awards: 10)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Happy Day"}, SongTitle: Happy Day)
-[7709/7709] dydb_show_itemX:129 - __________ 005 __________
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Another Album Title"}, AlbumTitle: Another Album Title)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"8"}, Awards: 8)
-[7709/7709] dydb_show_attr:61 - (STRING: {"S":"PartiQL Rocks"}, SongTitle: PartiQL Rocks)
-[7709/7709] dydb_show_itemX:139 - __________ End __________
-[7709/7709] dydb_show_tableX:172 - ——————————————————————————————————————————————————
-[7709/7709] dydb_show_tableX:175 - (tablename: Music)
-[7709/7709] dydb_show_tableX:177 - __________ End __________
-[7709/7709] aws_open:158 - >>>>> dydb_create_table <<<<<
-[7709/7709] dydb_create_table:218 - CreateTable ok !!! (table_name: Demo, PK: Lanka, SK: Happy Day)
-[7709/7709] dydb_show_tableX:172 - ——————————————————————————————————————————————————
-[7709/7709] dydb_show_tableX:175 - (tablename: Demo)
-[7709/7709] dydb_show_tableX:175 - (tablename: Music)
-[7709/7709] dydb_show_tableX:177 - __________ End __________
-[7709/7709] aws_open:165 - >>>>> dydb_describe_table <<<<<
-[7709/7709] dydb_describe_table:286 - DescribeTable ok !!! (table_name: Demo)
-[7709/7709] dydb_show_table:148 - (Table Name: Demo)
-[7709/7709] dydb_show_table:149 - (Table ARN: arn:aws:dynamodb:eu-west-1:877409487449:table/Demo)
-[7709/7709] dydb_show_table:150 - (Table Status: CREATING)
-[7709/7709] dydb_show_table:151 - (Table ItemCount: 0)
-[7709/7709] dydb_show_table:152 - (Table Size: 0 bytes)
-[7709/7709] dydb_show_table:155 - (Throughput Read: 5, Write: 5)
-[7709/7709] dydb_show_table:161 - (Attributes[S]: PK)
-[7709/7709] dydb_show_table:161 - (Attributes[S]: SK)
-[7709/7709] aws_open:169 - >>>>> dydb_delete_table <<<<<
-[7709/7709] dydb_delete_table:255 - DeleteTable ok !!! (table_name: Demo)
-[7709/7709] dydb_describe_table:286 - DescribeTable ok !!! (table_name: Demo)
-[7709/7709] dydb_describe_table:286 - DescribeTable ok !!! (table_name: Demo)
-[7709/7709] dydb_describe_table:296 - DescribeTable error - Requested resource not found: Table: Demo not found !!! (table_name: Demo)
-[7709/7709] dydb_show_tableX:172 - ——————————————————————————————————————————————————
-[7709/7709] dydb_show_tableX:175 - (tablename: Music)
-[7709/7709] dydb_show_tableX:177 - __________ End __________
-[7709/7709] main:321 - Bye-Bye !!!
+Usage: awsx_123
+  -d, --debug       debug level
+  -b, --db          DynamoDB Demo
+  -s, --s3          S3 Demo
+  -h, --help
+Version: 0x01004000, 2662, 1671202359, lanka, 1671254781
+Example:
+  awsx_123 -d 4
+```
+```bash
+$ ./awsx_123 -s
+[547529/547529] aws_s3_test:204 - __________ Enter __________
+[547529/547529] aws_s3_test:209 - >>>>> s3_get_file <<<<<
+[547529/547529] s3_get_file:38 - (bucket: utilx9/111.txt -> saveto: 222.txt)
+[547529/547529] s3_get_file:51 - GetObject ok !!! (bucket: utilx9/111.txt -> saveto: 222.txt)
+[547529/547529] main:388 - Bye-Bye !!!
+
+```
+
+```bash
+$ ./awsx_123 -b
+[547539/547539] aws_dynamodb_test:81 - __________ Enter __________
+[547539/547539] aws_dynamodb_test:92 - >>>>> dydb_del_item <<<<<
+[547539/547539] dydb_del_item:360 - DeleteItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[547539/547539] aws_dynamodb_test:100 - >>>>> dydb_put_item <<<<<
+[547539/547539] dydb_put_item:463 - PutItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka)
+[547539/547539] dydb_get_item:418 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[547539/547539] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[547539/547539] dydb_show_attr:89 - (Sponsor[0]: dog)
+[547539/547539] dydb_show_attr:89 - (Sponsor[1]: mouse)
+[547539/547539] dydb_show_attr:89 - (Sponsor[2]: tiger)
+[547539/547539] aws_dynamodb_test:121 - >>>>> dydb_update_item <<<<<
+[547539/547539] dydb_update_item:697 - UpdateItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka), (SET #0=:value0,#1=:value1)
+[547539/547539] dydb_get_item:418 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 6)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[547539/547539] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[547539/547539] dydb_show_attr:89 - (Sponsor[0]: dog)
+[547539/547539] dydb_show_attr:89 - (Sponsor[1]: mouse)
+[547539/547539] dydb_show_attr:89 - (Sponsor[2]: tiger)
+[547539/547539] dydb_show_attr:64 - (NUMBER: {"N":"4567"}, garbage: 4567)
+[547539/547539] aws_dynamodb_test:137 - >>>>> dydb_remove_attributes <<<<<
+[547539/547539] dydb_remove_attributes:569 - UpdateItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka), (REMOVE garbage)
+[547539/547539] dydb_get_item:418 - GetItem ok !!! (table_name: Music, Artist: Lanka, SongTitle: Lanka, attr_size: 5)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[547539/547539] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[547539/547539] dydb_show_attr:89 - (Sponsor[0]: dog)
+[547539/547539] dydb_show_attr:89 - (Sponsor[1]: mouse)
+[547539/547539] dydb_show_attr:89 - (Sponsor[2]: tiger)
+[547539/547539] aws_dynamodb_test:147 - >>>>> dydb_query_item <<<<<
+[547539/547539] dydb_query_item:532 - Query ok !!! (table_name: Music, Artist: Lanka, items_size: 2)
+[547539/547539] dydb_show_itemX:125 - ———————————————————————————————————————————————————
+[547539/547539] dydb_show_itemX:129 - __________ 000 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[547539/547539] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[547539/547539] dydb_show_attr:89 - (Sponsor[0]: dog)
+[547539/547539] dydb_show_attr:89 - (Sponsor[1]: mouse)
+[547539/547539] dydb_show_attr:89 - (Sponsor[2]: tiger)
+[547539/547539] dydb_show_itemX:129 - __________ 001 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka520"}, AlbumTitle: Lanka520)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka520520"}, SongTitle: Lanka520520)
+[547539/547539] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"cat"},{"S":"mouse"},{"S":"stoat"},{"S":"snake"}]})
+[547539/547539] dydb_show_attr:89 - (Sponsor[0]: dog)
+[547539/547539] dydb_show_attr:89 - (Sponsor[1]: cat)
+[547539/547539] dydb_show_attr:89 - (Sponsor[2]: mouse)
+[547539/547539] dydb_show_attr:89 - (Sponsor[3]: stoat)
+[547539/547539] dydb_show_attr:89 - (Sponsor[4]: snake)
+[547539/547539] dydb_show_itemX:139 - _______________________ End _______________________
+[547539/547539] aws_dynamodb_test:155 - >>>>> dydb_scan_item <<<<<
+[547539/547539] dydb_scan_item:630 - Scan ok !!! (table_name: Music, Artist: Lanka, items_size: 6)
+[547539/547539] dydb_show_itemX:125 - ———————————————————————————————————————————————————
+[547539/547539] dydb_show_itemX:129 - __________ 000 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Somewhat Famous"}, AlbumTitle: Somewhat Famous)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"No One You Know"}, Artist: No One You Know)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Call Me Today"}, SongTitle: Call Me Today)
+[547539/547539] dydb_show_itemX:129 - __________ 001 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Somewhat Famous"}, AlbumTitle: Somewhat Famous)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"No One You Know"}, Artist: No One You Know)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"2"}, Awards: 2)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Howdy"}, SongTitle: Howdy)
+[547539/547539] dydb_show_itemX:129 - __________ 002 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Album123"}, AlbumTitle: Album123)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, SongTitle: Lanka)
+[547539/547539] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"mouse"},{"S":"tiger"}]})
+[547539/547539] dydb_show_attr:89 - (Sponsor[0]: dog)
+[547539/547539] dydb_show_attr:89 - (Sponsor[1]: mouse)
+[547539/547539] dydb_show_attr:89 - (Sponsor[2]: tiger)
+[547539/547539] dydb_show_itemX:129 - __________ 003 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka520"}, AlbumTitle: Lanka520)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka"}, Artist: Lanka)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"1"}, Awards: 1)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Lanka520520"}, SongTitle: Lanka520520)
+[547539/547539] dydb_show_attr:86 - (ATTRIBUTE_LIST: {"L":[{"S":"dog"},{"S":"cat"},{"S":"mouse"},{"S":"stoat"},{"S":"snake"}]})
+[547539/547539] dydb_show_attr:89 - (Sponsor[0]: dog)
+[547539/547539] dydb_show_attr:89 - (Sponsor[1]: cat)
+[547539/547539] dydb_show_attr:89 - (Sponsor[2]: mouse)
+[547539/547539] dydb_show_attr:89 - (Sponsor[3]: stoat)
+[547539/547539] dydb_show_attr:89 - (Sponsor[4]: snake)
+[547539/547539] dydb_show_itemX:129 - __________ 004 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Songs About Life"}, AlbumTitle: Songs About Life)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"10"}, Awards: 10)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Happy Day"}, SongTitle: Happy Day)
+[547539/547539] dydb_show_itemX:129 - __________ 005 __________
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Another Album Title"}, AlbumTitle: Another Album Title)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"Acme Band"}, Artist: Acme Band)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"8"}, Awards: 8)
+[547539/547539] dydb_show_attr:61 - (STRING: {"S":"PartiQL Rocks"}, SongTitle: PartiQL Rocks)
+[547539/547539] dydb_show_itemX:139 - _______________________ End _______________________
+[547539/547539] dydb_show_tableX:172 - ———————————————————————————————————————————————————
+[547539/547539] dydb_show_tableX:175 - (tablename: Music)
+[547539/547539] dydb_show_tableX:177 - _______________________ End _______________________
+[547539/547539] aws_dynamodb_test:171 - >>>>> dydb_create_table <<<<<
+[547539/547539] dydb_create_table:218 - CreateTable ok !!! (table_name: Demo, PK: Lanka, SK: Happy Day)
+[547539/547539] dydb_show_tableX:172 - ———————————————————————————————————————————————————
+[547539/547539] dydb_show_tableX:175 - (tablename: Demo)
+[547539/547539] dydb_show_tableX:175 - (tablename: Music)
+[547539/547539] dydb_show_tableX:177 - _______________________ End _______________________
+[547539/547539] aws_dynamodb_test:178 - >>>>> dydb_describe_table <<<<<
+[547539/547539] dydb_describe_table:291 - DescribeTable ok !!! (table_name: Demo)
+[547539/547539] dydb_show_table:148 - (Table Name: Demo)
+[547539/547539] dydb_show_table:149 - (Table ARN: arn:aws:dynamodb:eu-west-1:877409487449:table/Demo)
+[547539/547539] dydb_show_table:150 - (Table Status: CREATING)
+[547539/547539] dydb_show_table:151 - (Table ItemCount: 0)
+[547539/547539] dydb_show_table:152 - (Table Size: 0 bytes)
+[547539/547539] dydb_show_table:155 - (Throughput Read: 5, Write: 5)
+[547539/547539] dydb_show_table:161 - (Attributes[S]: PK)
+[547539/547539] dydb_show_table:161 - (Attributes[S]: SK)
+[547539/547539] aws_dynamodb_test:183 - >>>>> dydb_delete_table <<<<<
+[547539/547539] dydb_delete_table:255 - DeleteTable ok !!! (table_name: Demo)
+[547539/547539] dydb_describe_table:291 - DescribeTable ok !!! (table_name: Demo)
+[547539/547539] dydb_describe_table:295 - DescribeTable error - Requested resource not found: Table: Demo not found !!! (table_name: Demo)
+[547539/547539] dydb_show_tableX:172 - ———————————————————————————————————————————————————
+[547539/547539] dydb_show_tableX:175 - (tablename: Music)
+[547539/547539] dydb_show_tableX:177 - _______________________ End _______________________
+[547539/547539] main:388 - Bye-Bye !!!
 
 ```
 
@@ -210,3 +249,11 @@ Run an example and read it.
 | Table | Table |
 | Item | Row |
 | Attribute | Column |
+
+#### B. S3
+
+| S3 | File |
+| -------- | -------------- |
+| Bucket | Folder |
+| Key | File |
+|  |  |
