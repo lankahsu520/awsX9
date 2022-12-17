@@ -205,17 +205,29 @@ static void aws_s3_demo(void)
 
 		s3_ctx_init(s3_ctx, awsX_s3_cli_get());
 
+#if (1)
+		DBG_WN_LN(">>>>> s3_put_object (local -> bucket/key) <<<<<");
+		s3_ctx_init_put(s3_ctx, (char *)"README.md", (char *)"utilx9", (char *)"love_letter_s3.txt");
+		s3_put_object(s3_ctx);
+#endif
+
+#if (1)
 		DBG_WN_LN(">>>>> s3_get_object (bucket/key -> local) <<<<<");
-		s3_ctx_init_get(s3_ctx, (char *)"utilx9", (char *)"111.txt", (char *)"222.txt");
+		s3_ctx_init_get(s3_ctx, (char *)"utilx9", (char *)"love_letter_s3.txt", (char *)"love_letter.txt");
 		s3_get_object(s3_ctx);
+#endif
 
-		DBG_WN_LN(">>>>> s3_get_object (bucket/key -> NULL) <<<<<");
-		s3_ctx_init_delete(s3_ctx, (char *)"utilx9", (char *)"222.txt");
-		s3_delete_object(s3_ctx);
-
+#if (1)
 		DBG_WN_LN(">>>>> s3_copy_object (bucket/key -> bucket/key) <<<<<");
-		s3_ctx_init_copy(s3_ctx, (char *)"utilx9", (char *)"111.txt", (char *)"utilx9", (char *)"222.txt");
+		s3_ctx_init_copy(s3_ctx, (char *)"utilx9", (char *)"love_letter_cpy.txt", (char *)"utilx9", (char *)"love_letter_bak.txt");
 		s3_copy_object(s3_ctx);
+#endif
+
+#if (1)
+			DBG_WN_LN(">>>>> s3_get_object (bucket/key -> NULL) <<<<<");
+			s3_ctx_init_delete(s3_ctx, (char *)"utilx9", (char *)"love_letter_bak.txt");
+			s3_delete_object(s3_ctx);
+#endif
 	}
 #endif
 }
