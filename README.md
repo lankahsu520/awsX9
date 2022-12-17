@@ -67,6 +67,7 @@ flowchart TD
 			s3_copy_object
 			s3_delete_object
 			s3_get_object
+			s3_put_object
 		end
 	end
 
@@ -106,17 +107,20 @@ Example:
 ```
 ```bash
 $ ./awsx_123 -s
-[550760/550760] aws_s3_demo:201 - __________ Enter __________
-[550760/550760] aws_s3_demo:208 - >>>>> s3_get_object (bucket/key -> local) <<<<<
-[550760/550760] s3_get_object:138 - (bucket: utilx9/111.txt -> localname: 222.txt)
-[550760/550760] s3_get_object:151 - GetObject ok !!! (bucket: utilx9/111.txt -> saveto: 222.txt)
-[550760/550760] aws_s3_demo:212 - >>>>> s3_get_object (bucket/key -> NULL) <<<<<
-[550760/550760] s3_delete_object:96 - (bucket: utilx9/222.txt -> NULL)
-[550760/550760] s3_delete_object:106 - DeleteObject ok !!! (bucket: utilx9/222.txt -> NULL)
-[550760/550760] aws_s3_demo:216 - >>>>> s3_copy_object (bucket/key -> bucket/key) <<<<<
-[550760/550760] s3_copy_object:54 - (bucket: utilx9/111.txt -> localname: utilx9)
-[550760/550760] s3_copy_object:67 - CopyObject ok !!! (bucket: utilx9/111.txt -> bucket: utilx9/222.txt)
-[550760/550760] main:400 - Bye-Bye !!!
+[551701/551701] aws_s3_demo:201 - __________ Enter __________
+[551701/551701] aws_s3_demo:209 - >>>>> s3_put_object (local -> bucket/key) <<<<<
+[551701/551701] s3_put_object:183 - (localname: README.md -> bucket: utilx9/love_letter_s3.txt)
+[551701/551701] s3_put_object:202 - PutObject ok !!! (localname: README.md -> bucket: utilx9/love_letter_s3.txt)
+[551701/551701] aws_s3_demo:215 - >>>>> s3_get_object (bucket/key -> local) <<<<<
+[551701/551701] s3_get_object:139 - (bucket: utilx9/love_letter_s3.txt -> localname: love_letter.txt)
+[551701/551701] s3_get_object:152 - GetObject ok !!! (bucket: utilx9/love_letter_s3.txt -> saveto: love_letter.txt)
+[551701/551701] aws_s3_demo:221 - >>>>> s3_copy_object (bucket/key -> bucket/key) <<<<<
+[551701/551701] s3_copy_object:55 - (bucket: utilx9/love_letter_cpy.txt -> bucket: utilx9/love_letter_bak.txt)
+[551701/551701] s3_copy_object:68 - CopyObject ok !!! (bucket: utilx9/love_letter_cpy.txt -> bucket: utilx9/love_letter_bak.txt)
+[551701/551701] aws_s3_demo:227 - >>>>> s3_get_object (bucket/key -> NULL) <<<<<
+[551701/551701] s3_delete_object:97 - (bucket: utilx9/love_letter_bak.txt -> NULL)
+[551701/551701] s3_delete_object:107 - DeleteObject ok !!! (bucket: utilx9/love_letter_bak.txt -> NULL)
+[551701/551701] main:412 - Bye-Bye !!!
 
 ```
 
