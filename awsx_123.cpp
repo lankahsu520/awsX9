@@ -19,12 +19,15 @@
 
 #include "awsx9.h"
 
-#define TAG "awsBowser"
+#define TAG "awsx_123"
 
 #define USB_AWSX9
 
 // ** app **
 static int is_quit = 0;
+
+static int test_DynamoDB = 0;
+static int test_S3 = 0;
 
 static int app_quit(void)
 {
@@ -49,6 +52,8 @@ static void app_set_quit(int mode)
 
 DyDB_InfoX_t dydb_t_Music = {
 	.dydb_cli = NULL,
+	.isinit = 0,
+	.isfree = 0,
 	.table_name = DYDB_TABLE_NAME_MUSIC,
 	.pk = DYDB_PK_NAME_ARTIST,
 	.pk_val = DYDB_PK_VAL_LANKA,
@@ -62,6 +67,8 @@ DyDB_InfoX_t dydb_t_Music = {
 
 DyDB_InfoX_t dydb_t_Demo = {
 	.dydb_cli = NULL,
+	.isinit = 0,
+	.isfree = 0,
 	.table_name = DYDB_TABLE_NAME_DEMO,
 	.pk = DYDB_PK_NAME_PK,
 	.pk_val = DYDB_PK_VAL_LANKA,
@@ -69,8 +76,15 @@ DyDB_InfoX_t dydb_t_Demo = {
 	.sk_val = DYDB_SK_VAL_HAPPY_DAY,
 };
 
-static void aws_open(void)
+static void aws_dynamodb_test(void)
 {
+	DBG_IF_LN(DBG_TXT_ENTER);
+
+	{
+		dydb_ctx_init(&dydb_t_Music, awsX_dydb_cli_get());
+		dydb_ctx_init(&dydb_t_Demo, awsX_dydb_cli_get());
+	}
+
 #if (1)
 	{
 		DyDB_InfoX_t *dydb_ctx = &dydb_t_Music;
@@ -176,10 +190,47 @@ static void aws_open(void)
 #endif
 }
 
+S3_InfoX_t s3_t_Demo = {
+	.s3_cli = NULL,
+	.isinit = 0,
+	.isfree = 0,
+	{.bucket = "utilx9"},
+	{.key = "111.txt"},
+	{.saveto = "222.txt"},
+};
+
+static void aws_s3_test(void)
+{
+	DBG_IF_LN(DBG_TXT_ENTER);
+#if (1)
+	{
+		S3_InfoX_t *s3_ctx = &s3_t_Demo;
+		s3_ctx_init(s3_ctx, awsX_s3_cli_get());
+		DBG_WN_LN(">>>>> s3_get_file <<<<<");
+		s3_get_file(s3_ctx);
+	}
+#endif
+}
+
+static void aws_open(void)
+{
+	if ( test_DynamoDB == 1 )
+	{
+		aws_dynamodb_test();
+	}
+	if ( test_S3 == 1 )
+	{
+		aws_s3_test();
+	}
+}
+
 static void aws_free(void)
 {
-	dydb_ctx_free(&dydb_t_Music);
-	dydb_ctx_free(&dydb_t_Demo);
+	if ( test_DynamoDB == 1 )
+	{
+		dydb_ctx_free(&dydb_t_Music);
+		dydb_ctx_free(&dydb_t_Demo);
+	}
 
 	awsX_free();
 }
@@ -187,9 +238,6 @@ static void aws_free(void)
 static void aws_init(void)
 {
 	awsX_init();
-
-	dydb_ctx_init(&dydb_t_Music, awsX_cli_get());
-	dydb_ctx_init(&dydb_t_Demo, awsX_cli_get());
 }
 #endif
 
@@ -260,10 +308,12 @@ static void app_signal_register(void)
 }
 
 int option_index = 0;
-const char* short_options = "d:h";
+const char* short_options = "d:bsh";
 static struct option long_options[] =
 {
 	{ "debug",       required_argument,   NULL,    'd'  },
+	{ "db",          no_argument,         NULL,    'b'  },
+	{ "s3",          no_argument,         NULL,    's'  },
 	{ "help",        no_argument,         NULL,    'h'  },
 	{ 0,             0,                      0,    0    }
 };
@@ -272,6 +322,8 @@ static void app_showusage(int exit_code)
 {
 	printf( "Usage: %s\n"
 					"  -d, --debug       debug level\n"
+					"  -b, --db          DynamoDB Demo \n"
+					"  -s, --s3          S3 Demo \n"
 					"  -h, --help\n", TAG);
 	printf( "Version: %s\n", version_show());
 	printf( "Example:\n"
@@ -293,10 +345,25 @@ static void app_ParseArguments(int argc, char **argv)
 					dbg_lvl_set(atoi(optarg));
 				}
 				break;
+			case 'b':
+				{
+					test_DynamoDB = 1;
+				}
+				break;
+			case 's':
+				{
+					test_S3 = 1;
+				}
+				break;
 			default:
 				app_showusage(-1);
 				break;
 		}
+	}
+
+	if ( (test_DynamoDB | test_S3) == 0 )
+	{
+		app_showusage(-1);
 	}
 }
 

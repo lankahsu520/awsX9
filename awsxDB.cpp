@@ -789,8 +789,9 @@ void dydb_ctx_itemX_free(DyDB_InfoX_t *dydb_ctx)
 
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->isfree == 0) )
 	{
+		dydb_ctx->isfree = 1;
 		dydb_ctx_tableX_free(dydb_ctx);
 		dydb_ctx_attrX_free(dydb_ctx);
 		dydb_ctx_itemX_free(dydb_ctx);
@@ -799,8 +800,9 @@ void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx)
 
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli)
 {
-	if (dydb_ctx)
+	if ( (dydb_ctx) && (dydb_ctx->isinit == 0) )
 	{
+		dydb_ctx->isinit = 1;
 		dydb_ctx->dydb_cli = dydb_cli;
 		CLIST_STRUCT_INIT(dydb_ctx, clistTableX);
 		CLIST_STRUCT_INIT(dydb_ctx, clistAttrX);

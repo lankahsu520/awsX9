@@ -20,6 +20,9 @@
 #include <aws/dynamodb/DynamoDBClient.h>
 #include <aws/dynamodb/model/AttributeDefinition.h>
 
+#include <aws/s3/S3Client.h>
+#include <aws/s3/model/GetObjectRequest.h>
+
 #include "utilx9.h"
 
 #ifdef __cplusplus
@@ -46,12 +49,12 @@ extern "C" {
 			|| ( ptr->sk == NULL ) \
 			|| ( ptr->sk_val == NULL ) )  \
 		{ \
-			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p, sk: %p, sk_val: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val, dydb_ctx->sk, dydb_ctx->sk_val); \
+			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p, sk: %p, sk_val: %p)", ptr->dydb_cli, ptr->table_name, ptr->pk, ptr->pk_val, ptr->sk, ptr->sk_val); \
 			__ret = -1; \
 		} \
 		__ret; \
 	})
-	
+
 #define DYDB_CTX_CHECK_PK(ptr) \
 	({ int __ret = 0; \
 		if ( ( ptr->dydb_cli == NULL ) \
@@ -59,7 +62,7 @@ extern "C" {
 			|| ( ptr->pk == NULL ) \
 			|| ( ptr->pk_val == NULL ) ) \
 		{ \
-			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name, dydb_ctx->pk, dydb_ctx->pk_val); \
+			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p)", ptr->dydb_cli, ptr->table_name, ptr->pk, ptr->pk_val); \
 			__ret = -1; \
 		} \
 		__ret; \
@@ -70,7 +73,7 @@ extern "C" {
 		if ( ( ptr->dydb_cli == NULL ) \
 			|| ( ptr->table_name == NULL ) ) \
 		{ \
-			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p)", dydb_ctx->dydb_cli, dydb_ctx->table_name); \
+			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p)", ptr->dydb_cli, ptr->table_name); \
 			__ret = -1; \
 		} \
 		__ret; \
@@ -109,6 +112,9 @@ typedef struct DyDB_InfoX_STRUCT
 {
 	Aws::DynamoDB::DynamoDBClient *dydb_cli;
 
+	int isinit;
+	int isfree;
+
 	const char *table_name;
 	const char *pk;
 	const char *pk_val;
@@ -127,6 +133,52 @@ typedef struct DyDB_InfoX_STRUCT
 	CLIST_STRUCT(clistItemX);
 } DyDB_InfoX_t;
 
+
+//** s3 **
+#define S3_CTX_CHECK_CLI(ptr) \
+	({ int __ret = 0; \
+		if ( ( ptr->s3_cli == NULL ) \
+			) \
+		{ \
+			DBG_ER_LN("Null Definition !!! (s3_cli: %p)", ptr->s3_cli); \
+			__ret = -1; \
+		} \
+		__ret; \
+	})
+
+#define S3_CTX_CHECK_ALL(ptr) \
+	({ int __ret = 0; \
+		if ( ( ptr->s3_cli == NULL ) \
+			|| ( SAFE_STRLEN(ptr->bucket) <= 0 ) \
+			|| ( SAFE_STRLEN(ptr->key) <= 0 ) \
+			|| ( SAFE_STRLEN(ptr->saveto) <= 0 ) ) \
+			) \
+		{ \
+			DBG_ER_LN("Null Definition !!! (s3_cli: %p, bucket: %d, key: %d, saveto: %d)", ptr->s3_cli, SAFE_STRLEN(ptr->bucket), SAFE_STRLEN(ptr->key), SAFE_STRLEN(ptr->saveto)); \
+			__ret = -1; \
+		} \
+		__ret; \
+	})
+
+typedef enum
+{
+	S3_ACT_ID_PUSH,
+	S3_ACT_ID_PULL,
+	S3_ACT_ID_MAX,
+} S3_ACT_ID;
+
+typedef struct S3_InfoX_STRUCT
+{
+	Aws::S3::S3Client *s3_cli;
+
+	int isinit;
+	int isfree;
+
+	char bucket[LEN_OF_DIRNAME512]; // folder
+	char key[LEN_OF_FILENAME512]; // filename
+	char saveto[LEN_OF_FULLNAME1024]; //
+
+} S3_InfoX_t;
 
 //******************************************************************************
 //** function **
@@ -163,7 +215,12 @@ void dydb_ctx_itemX_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli);
 
-Aws::DynamoDB::DynamoDBClient *awsX_cli_get(void);
+int s3_get_file(S3_InfoX_t *s3_ctx);
+void s3_ctx_init(S3_InfoX_t *s3_ctx, Aws::S3::S3Client *dydb_cli);
+
+Aws::DynamoDB::DynamoDBClient *awsX_dydb_cli_get(void);
+Aws::S3::S3Client *awsX_s3_cli_get(void);
+
 void awsX_free(void);
 void awsX_init(void);
 

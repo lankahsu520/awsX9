@@ -20,10 +20,16 @@ using namespace std;
 
 Aws::SDKOptions aws_options;
 Aws::DynamoDB::DynamoDBClient *dydb_caller;
+Aws::S3::S3Client *s3_caller;
 
-Aws::DynamoDB::DynamoDBClient *awsX_cli_get(void)
+Aws::DynamoDB::DynamoDBClient *awsX_dydb_cli_get(void)
 {
 	return dydb_caller;
+}
+
+Aws::S3::S3Client *awsX_s3_cli_get(void)
+{
+	return s3_caller;
 }
 
 void awsX_free(void)
@@ -45,4 +51,5 @@ void awsX_init(void)
 
 	Aws::Client::ClientConfiguration clientConfig;
 	dydb_caller = new Aws::DynamoDB::DynamoDBClient(clientConfig);
+	s3_caller = new Aws::S3::S3Client(clientConfig);
 }
