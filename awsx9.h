@@ -21,7 +21,6 @@
 #include <aws/dynamodb/model/AttributeDefinition.h>
 
 #include <aws/s3/S3Client.h>
-#include <aws/s3/model/GetObjectRequest.h>
 
 #include "utilx9.h"
 
@@ -146,26 +145,27 @@ typedef struct DyDB_InfoX_STRUCT
 		__ret; \
 	})
 
-#define S3_CTX_CHECK_ALL(ptr) \
-	({ int __ret = 0; \
-		if ( ( ptr->s3_cli == NULL ) \
-			|| ( SAFE_STRLEN(ptr->bucket) <= 0 ) \
-			|| ( SAFE_STRLEN(ptr->key) <= 0 ) \
-			|| ( SAFE_STRLEN(ptr->saveto) <= 0 ) ) \
-			) \
-		{ \
-			DBG_ER_LN("Null Definition !!! (s3_cli: %p, bucket: %d, key: %d, saveto: %d)", ptr->s3_cli, SAFE_STRLEN(ptr->bucket), SAFE_STRLEN(ptr->key), SAFE_STRLEN(ptr->saveto)); \
-			__ret = -1; \
-		} \
-		__ret; \
-	})
-
 typedef enum
 {
 	S3_ACT_ID_PUSH,
 	S3_ACT_ID_PULL,
 	S3_ACT_ID_MAX,
 } S3_ACT_ID;
+
+typedef struct S3_BUCKET_STRUCT
+{
+	char bucket[LEN_OF_DIRNAME512]; // folder
+	char key[LEN_OF_FILENAME512]; // filename
+} S3_BUCKET_t;
+
+typedef struct S3_FILEX_STRUCT
+{
+	union
+	{
+		S3_BUCKET_t remote;
+		char localname[LEN_OF_FULLNAME1024]; //
+	} fileX;
+} S3_FILEX_t;
 
 typedef struct S3_InfoX_STRUCT
 {
@@ -174,10 +174,8 @@ typedef struct S3_InfoX_STRUCT
 	int isinit;
 	int isfree;
 
-	char bucket[LEN_OF_DIRNAME512]; // folder
-	char key[LEN_OF_FILENAME512]; // filename
-	char saveto[LEN_OF_FULLNAME1024]; //
-
+	S3_FILEX_t from;
+	S3_FILEX_t to;
 } S3_InfoX_t;
 
 //******************************************************************************
@@ -215,7 +213,12 @@ void dydb_ctx_itemX_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_free(DyDB_InfoX_t *dydb_ctx);
 void dydb_ctx_init(DyDB_InfoX_t *dydb_ctx, Aws::DynamoDB::DynamoDBClient *dydb_cli);
 
+int s3_copy_file(S3_InfoX_t *s3_ctx);
 int s3_get_file(S3_InfoX_t *s3_ctx);
+
+void s3_ctx_init_copy(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key, char *to_bucket, char *to_key);
+void s3_ctx_init_get(S3_InfoX_t *s3_ctx, char *bucket, char *key, char *localname);
+void s3_ctx_free(S3_InfoX_t *s3_ctx);
 void s3_ctx_init(S3_InfoX_t *s3_ctx, Aws::S3::S3Client *dydb_cli);
 
 Aws::DynamoDB::DynamoDBClient *awsX_dydb_cli_get(void);

@@ -3,6 +3,15 @@ awsX9 is an api of [AWS SDK (C++)](https://github.com/aws/aws-sdk-cpp) . We can 
 
 Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-CLI.md) and [helper_AWS-SDK.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-SDK.md).
 
+
+# 2. Depend on
+
+- [utilx9](https://github.com/lankahsu520/utilx9)
+- [AWS SDK (C++)](https://www.silabs.com/wireless/z-wave) (aws-sdk-cpp-1.10.9)
+
+# 3. Current Status
+
+#### A. DynamoDB
 ```mermaid
 flowchart TD
 	subgraph Amazon
@@ -46,6 +55,7 @@ flowchart TD
 	class DynamoDB pink
 	class awsxDB pink
 ```
+#### B. S3
 ```mermaid
 flowchart TD
 	subgraph Amazon
@@ -55,6 +65,7 @@ flowchart TD
 	subgraph awsX9
 		subgraph awsxS3
 			s3_get_file
+			s3_copy_file
 		end
 	end
 
@@ -68,19 +79,6 @@ flowchart TD
 	class S3 lightblue
 	class awsxS3 lightblue
 ```
-
-
-# 2. Depend on
-
-- [utilx9](https://github.com/lankahsu520/utilx9)
-- [AWS SDK (C++)](https://www.silabs.com/wireless/z-wave) (aws-sdk-cpp-1.10.9)
-
-# 3. Current Status
-
-#### A. DynamoDB
-
-#### B. S3
-
 # 4. Build
 
    ```bash
@@ -107,11 +105,14 @@ Example:
 ```
 ```bash
 $ ./awsx_123 -s
-[547529/547529] aws_s3_test:204 - __________ Enter __________
-[547529/547529] aws_s3_test:209 - >>>>> s3_get_file <<<<<
-[547529/547529] s3_get_file:38 - (bucket: utilx9/111.txt -> saveto: 222.txt)
-[547529/547529] s3_get_file:51 - GetObject ok !!! (bucket: utilx9/111.txt -> saveto: 222.txt)
-[547529/547529] main:388 - Bye-Bye !!!
+[550426/550426] aws_s3_demo:201 - __________ Enter __________
+[550426/550426] aws_s3_demo:208 - >>>>> s3_get_file (bucket/key -> local) <<<<<
+[550426/550426] s3_get_file:98 - (bucket: utilx9/111.txt -> localname: 222.txt)
+[550426/550426] s3_get_file:111 - GetObject ok !!! (bucket: utilx9/111.txt -> saveto: 222.txt)
+[550426/550426] aws_s3_demo:212 - >>>>> s3_copy_file (bucket/key -> bucket/key) <<<<<
+[550426/550426] s3_copy_file:53 - (bucket: utilx9/111.txt -> localname: utilx9)
+[550426/550426] s3_copy_file:66 - CopyObject ok !!! (bucket: utilx9/111.txt -> bucket: utilx9/222.txt)
+[550426/550426] main:396 - Bye-Bye !!!
 
 ```
 
