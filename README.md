@@ -6,7 +6,6 @@ Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob
 ```mermaid
 flowchart TD
 	subgraph Amazon
-		S3
 		DynamoDB
 	end
 
@@ -36,13 +35,8 @@ flowchart TD
 				dydb_scan_item --- dydb_show_itemX
 			end
 		end
-	
-		subgraph awsxS3
-			s3_get_file
-		end
 	end
 	DynamoDB <--> awsxDB
-	awsxS3<-->S3
 
 	classDef yellow fill:#FFFFCC
 	classDef pink fill:#FFCCCC
@@ -51,10 +45,33 @@ flowchart TD
 
 	class DynamoDB pink
 	class awsxDB pink
+```
+```mermaid
+flowchart TD
+	subgraph Amazon
+		S3
+	end
+
+	subgraph awsX9
+		subgraph awsxS3
+			s3_get_file
+		end
+	end
+
+	S3<-->awsxS3
+
+	classDef yellow fill:#FFFFCC
+	classDef pink fill:#FFCCCC
+	classDef blue fill:#0000FF
+	classDef lightblue fill:#ADD8E6
+
 	class S3 lightblue
 	class awsxS3 lightblue
 ```
+
+
 # 2. Depend on
+
 - [utilx9](https://github.com/lankahsu520/utilx9)
 - [AWS SDK (C++)](https://www.silabs.com/wireless/z-wave) (aws-sdk-cpp-1.10.9)
 
