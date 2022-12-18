@@ -33,6 +33,9 @@ LIBXXX_OBJS += \
 							awsxS3.cpp.o \
 							awsx9.cpp.o
 
+# cpp
+LIBXXX_OBJS += \
+
 #** LIBXXX_yes **
 ifneq ("$(LIBNAME_A)", "")
 LIBXXX_A = lib$(LIBNAME_A).a
@@ -129,7 +132,7 @@ $(CLEAN_BINS): $(CLEAN_OBJS) $(CLEAN_LIBS)
 
 clean:
 	$(PJ_SH_RM) Makefile.bak $(CLEAN_BINS) $(CLEAN_BINS:=.elf) $(CLEAN_BINS:=.gdb) $(AUTO_GENERATEDS)
-	$(PJ_SH_RM) .configured .patched $(addsuffix *, $(CLEAN_LIBS)) $(CLEAN_OBJS) $(CLEAN_OBJS:%.o=%.c.bak) $(CLEAN_OBJS:%.o=%.h.bak) $(CLEAN_BINS:=.cpp.o)
+	$(PJ_SH_RM) Makefile.bak $(addsuffix *, $(CLEAN_LIBS)) $(CLEAN_OBJS) $(CLEAN_OBJS:%.o=%.c.bak) $(CLEAN_OBJS:%.o=%.h.bak) $(CLEAN_BINS:=.cpp.o)
 	@for subbin in $(CLEAN_BINS); do \
 		($(PJ_SH_RM) $(SDK_BIN_DIR)/$$subbin;); \
 	done
@@ -147,6 +150,7 @@ distclean: clean
 	[ -L meson_public ] && ($(PJ_SH_RMDIR) meson_public; ) || true
 	[ -d ./subprojects ] && [ -f meson.build ] && (meson subprojects purge --confirm;) || true
 	$(PJ_SH_RMDIR) build_xxx .meson_config build.meson meson_options.txt
+	$(PJ_SH_RM) $(CONFIGURED) .patched .unpack
 
 %.a: $(LIBXXX_OBJS)
 	@echo 'Building lib (static): $@'
@@ -171,7 +175,7 @@ install: all
 	[ "$(LIBXXX_SO)" = "" ] || $(PJ_SH_MKDIR) $(SDK_LIB_DIR)
 	@for sublib in $(LIBXXX_SO); do \
 		$(PJ_SH_CP) $$sublib* $(SDK_LIB_DIR); \
-		$(STRIP) $(SDK_LIB_DIR)/$$sublib.$(VERSION_FULL); \
+		$(STRIP) $(SDK_LIB_DIR)/`basename $$sublib.$(VERSION_FULL)`; \
 	done
 	[ "$(HEADER_FILES)" = "" ] || $(PJ_SH_MKDIR) $(SDK_INC_DIR)
 	@for subheader in $(HEADER_FILES); do \
@@ -196,7 +200,7 @@ ifneq ("$(HOMEX_ROOT_DIR)", "")
 	[ "$(LIBXXX_SO)" = "" ] || $(PJ_SH_MKDIR) $(HOMEX_LIB_DIR)
 	@for sublib in $(LIBXXX_SO); do \
 		$(PJ_SH_CP) $$sublib* $(HOMEX_LIB_DIR); \
-		$(STRIP) $(HOMEX_LIB_DIR)/$$sublib.$(VERSION_FULL); \
+		$(STRIP) $(HOMEX_LIB_DIR)/`basename $$sublib.$(VERSION_FULL)`; \
 	done
 	#[ "$(HEADER_FILES)" = "" ] || $(PJ_SH_MKDIR) $(HOMEX_INC_DIR)
 	#@for subheader in $(HEADER_FILES); do \
