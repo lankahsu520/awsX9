@@ -190,7 +190,7 @@ static void aws_dynamodb_demo(void)
 #endif
 }
 
-S3_InfoX_t s3_t_Demo = {
+S3_InfoX_t s3_b_Demo = {
 	.s3_cli = NULL,
 	.isinit = 0,
 	.isfree = 0,
@@ -201,32 +201,34 @@ static void aws_s3_demo(void)
 	DBG_IF_LN(DBG_TXT_ENTER);
 #if (1)
 	{
-		S3_InfoX_t *s3_ctx = &s3_t_Demo;
+		S3_InfoX_t *s3_ctx = &s3_b_Demo;
 
 		s3_ctx_init(s3_ctx, awsX_s3_cli_get());
 
+		char to_bucket[LEN_OF_DIRNAME512] = "demox9";
+		char from_bucket[LEN_OF_DIRNAME512] = "demox9";
 #if (1)
 		DBG_WN_LN(">>>>> s3_put_object (local -> bucket/key) <<<<<");
-		s3_ctx_init_put(s3_ctx, (char *)"README.md", (char *)"utilx9", (char *)"love_letter_s3.txt");
+		s3_ctx_init_put(s3_ctx, (char *)"README.md", to_bucket, (char *)"love_letter_s3.txt");
 		s3_put_object(s3_ctx);
 #endif
 
 #if (1)
 		DBG_WN_LN(">>>>> s3_get_object (bucket/key -> local) <<<<<");
-		s3_ctx_init_get(s3_ctx, (char *)"utilx9", (char *)"love_letter_s3.txt", (char *)"love_letter.txt");
+		s3_ctx_init_get(s3_ctx, from_bucket, (char *)"love_letter_s3.txt", (char *)"love_letter.txt");
 		s3_get_object(s3_ctx);
 #endif
 
 #if (1)
 		DBG_WN_LN(">>>>> s3_copy_object (bucket/key -> bucket/key) <<<<<");
-		s3_ctx_init_copy(s3_ctx, (char *)"utilx9", (char *)"love_letter_cpy.txt", (char *)"utilx9", (char *)"love_letter_bak.txt");
+		s3_ctx_init_copy(s3_ctx, from_bucket, (char *)"love_letter_s3.txt", to_bucket, (char *)"love_letter_bak.txt");
 		s3_copy_object(s3_ctx);
 #endif
 
 #if (1)
-			DBG_WN_LN(">>>>> s3_get_object (bucket/key -> NULL) <<<<<");
-			s3_ctx_init_delete(s3_ctx, (char *)"utilx9", (char *)"love_letter_bak.txt");
-			s3_delete_object(s3_ctx);
+		DBG_WN_LN(">>>>> s3_get_object (bucket/key -> NULL) <<<<<");
+		s3_ctx_init_delete(s3_ctx, from_bucket, (char *)"love_letter_bak.txt");
+		s3_delete_object(s3_ctx);
 #endif
 	}
 #endif
@@ -253,7 +255,7 @@ static void aws_free(void)
 	}
 	if ( test_S3 == 1 )
 	{
-		s3_ctx_free(&s3_t_Demo);
+		s3_ctx_free(&s3_b_Demo);
 	}
 
 	awsX_free();

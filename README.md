@@ -268,7 +268,7 @@ awsX9 is under the New BSD License (BSD-3-Clause).
 
 # 7. Documentation
 Run an example and read it.
-#### A. DynamoDB
+#### A. [DynamoDB](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/examples-dynamodb.html)
 
 | DynamoDB | SQL Database |
 | -------- | -------------- |
@@ -276,7 +276,7 @@ Run an example and read it.
 | Item | Row |
 | Attribute | Column |
 
-#### B. S3
+#### B. [S3](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/examples-s3.html)
 
 | S3 | File |
 | -------- | -------------- |
