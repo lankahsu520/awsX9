@@ -42,11 +42,11 @@ extern "C" {
 #define DYDB_CTX_CHECK_ALL(ptr) \
 	({ int __ret = 0; \
 		if ( ( ptr->dydb_cli == NULL ) \
-			|| ( ptr->table_name == NULL ) \
-			|| ( ptr->pk == NULL ) \
-			|| ( ptr->pk_val == NULL ) \
-			|| ( ptr->sk == NULL ) \
-			|| ( ptr->sk_val == NULL ) )  \
+			|| ( ptr->table_name == NULL ) || ( SAFE_STRLEN((char*)ptr->table_name) == 0 ) \
+			|| ( ptr->pk == NULL ) || ( SAFE_STRLEN((char*)ptr->pk) == 0 ) \
+			|| ( ptr->pk_val == NULL ) || ( SAFE_STRLEN((char*)ptr->pk_val) == 0 ) \
+			|| ( ptr->sk == NULL ) || ( SAFE_STRLEN((char*)ptr->sk) == 0 ) \
+			|| ( ptr->sk_val == NULL ) || ( SAFE_STRLEN((char*)ptr->sk_val) == 0 ) )  \
 		{ \
 			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p, sk: %p, sk_val: %p)", ptr->dydb_cli, ptr->table_name, ptr->pk, ptr->pk_val, ptr->sk, ptr->sk_val); \
 			__ret = -1; \
@@ -57,9 +57,9 @@ extern "C" {
 #define DYDB_CTX_CHECK_PK(ptr) \
 	({ int __ret = 0; \
 		if ( ( ptr->dydb_cli == NULL ) \
-			|| ( ptr->table_name == NULL ) \
-			|| ( ptr->pk == NULL ) \
-			|| ( ptr->pk_val == NULL ) ) \
+			|| ( ptr->table_name == NULL ) || ( SAFE_STRLEN((char*)ptr->table_name) == 0 ) \
+			|| ( ptr->pk == NULL ) || ( SAFE_STRLEN((char*)ptr->pk) == 0 ) \
+			|| ( ptr->pk_val == NULL ) || ( SAFE_STRLEN((char*)ptr->pk_val) == 0 ) ) \
 		{ \
 			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p, pk: %p, pk_val: %p)", ptr->dydb_cli, ptr->table_name, ptr->pk, ptr->pk_val); \
 			__ret = -1; \
@@ -70,7 +70,7 @@ extern "C" {
 #define DYDB_CTX_CHECK_TABLE(ptr) \
 	({ int __ret = 0; \
 		if ( ( ptr->dydb_cli == NULL ) \
-			|| ( ptr->table_name == NULL ) ) \
+			|| ( ptr->table_name == NULL ) || ( SAFE_STRLEN((char*)ptr->table_name) == 0 ) ) \
 		{ \
 			DBG_ER_LN("Null Definition !!! (dydb_cli: %p, table_name: %p)", ptr->dydb_cli, ptr->table_name); \
 			__ret = -1; \
