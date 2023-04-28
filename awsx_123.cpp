@@ -165,13 +165,13 @@ static void aws_dynamodb_demo(void)
 	{
 		DyDB_InfoX_t *dydb_ctx = &dydb_t_Demo;
 #if (1)
-		dydb_list_table(dydb_ctx);
+		dydb_list_tables(dydb_ctx);
 		dydb_show_tableX(dydb_ctx);
 
 		DBG_WN_LN(">>>>> dydb_create_table <<<<<");
 		dydb_create_table(dydb_ctx);
 
-		dydb_list_table(dydb_ctx);
+		dydb_list_tables(dydb_ctx);
 		dydb_show_tableX(dydb_ctx);
 #endif
 
@@ -183,7 +183,7 @@ static void aws_dynamodb_demo(void)
 		DBG_WN_LN(">>>>> dydb_delete_table <<<<<");
 		dydb_delete_table(dydb_ctx);
 
-		dydb_list_table(dydb_ctx);
+		dydb_list_tables(dydb_ctx);
 		dydb_show_tableX(dydb_ctx);
 #endif
 	}

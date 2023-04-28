@@ -299,7 +299,7 @@ int dydb_describe_table(DyDB_InfoX_t *dydb_ctx)
 	return ret;
 }
 
-int dydb_list_table(DyDB_InfoX_t *dydb_ctx)
+int dydb_list_tables(DyDB_InfoX_t *dydb_ctx)
 {
 	int ret = 0;
 
