@@ -107,7 +107,7 @@ static void aws_dynamodb_demo(void)
 			dydb_ctx_attrX_addS(dydb_ctx, (char*)"Awards", (char*)"1");
 
 			char sponsor_val[LEN_OF_VAL128] = "dog:mouse:tiger";
-			dydb_ctx_attrX_addL_with_composeS(dydb_ctx, (char*)"Sponsor", sponsor_val);
+			dydb_ctx_attrX_addListS(dydb_ctx, (char*)"Sponsor", sponsor_val);
 
 			dydb_put_item(dydb_ctx);
 		}

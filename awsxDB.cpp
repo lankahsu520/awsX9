@@ -736,7 +736,7 @@ void dydb_ctx_attrX_addN(DyDB_InfoX_t *dydb_ctx, char *key, int value)
 	}
 }
 
-void dydb_ctx_attrX_addL_with_composeS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
+void dydb_ctx_attrX_addListS(DyDB_InfoX_t *dydb_ctx, char *key, char *value)
 {
 	if ( (dydb_ctx) && (dydb_ctx->dydb_cli) )
 	{
