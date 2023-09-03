@@ -15,7 +15,7 @@
 #include <iostream>
 
 //#include <aws/core/Aws.h>
-//#include <aws/core/utils/Outcome.h> 
+//#include <aws/core/utils/Outcome.h>
 #include <aws/s3/model/CopyObjectRequest.h>
 #include <aws/s3/model/DeleteObjectRequest.h>
 #include <aws/s3/model/GetObjectRequest.h>
@@ -35,15 +35,15 @@ int s3_copy_object(S3_InfoX_t *s3_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= S3_CTX_CHECK_CLI(s3_ctx) ) == -1 )
+	if ((ret= S3_CTX_CHECK_CLI(s3_ctx)) == -1)
 	{
 		return ret;
 	}
 
-	if ( (SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->from.fileX.remote.key) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->to.fileX.remote.bucket) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->to.fileX.remote.key) <=0 ) )
+	if ((SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket) <=0)
+		|| (SAFE_STRLEN(s3_ctx->from.fileX.remote.key) <=0)
+		|| (SAFE_STRLEN(s3_ctx->to.fileX.remote.bucket) <=0)
+		|| (SAFE_STRLEN(s3_ctx->to.fileX.remote.key) <=0))
 	{
 		size_t from_bucket_len = SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket);
 		size_t from_key_len = SAFE_STRLEN(s3_ctx->from.fileX.remote.key);
@@ -57,10 +57,10 @@ int s3_copy_object(S3_InfoX_t *s3_ctx)
 	Aws::S3::Model::CopyObjectRequest s3_copy_req;
 
 	// Set up the request.
-	Aws::String src_bucket_key( Aws::String(s3_ctx->from.fileX.remote.bucket) + "/" + Aws::String(s3_ctx->from.fileX.remote.key) );
-	s3_copy_req.WithCopySource( src_bucket_key )
-		.WithKey( s3_ctx->to.fileX.remote.key )
-		.WithBucket( s3_ctx->to.fileX.remote.bucket );
+	Aws::String src_bucket_key(Aws::String(s3_ctx->from.fileX.remote.bucket) + "/" + Aws::String(s3_ctx->from.fileX.remote.key));
+	s3_copy_req.WithCopySource(src_bucket_key)
+	.WithKey(s3_ctx->to.fileX.remote.key)
+	.WithBucket(s3_ctx->to.fileX.remote.bucket);
 
 	Aws::S3::Model::CopyObjectOutcome s3_copy_res = s3_ctx->s3_cli->CopyObject(s3_copy_req);
 	if (s3_copy_res.IsSuccess())
@@ -81,13 +81,13 @@ int s3_delete_object(S3_InfoX_t *s3_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= S3_CTX_CHECK_CLI(s3_ctx) ) == -1 )
+	if ((ret= S3_CTX_CHECK_CLI(s3_ctx)) == -1)
 	{
 		return ret;
 	}
 
-	if ( (SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->from.fileX.remote.key) <=0 ) )
+	if ((SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket) <=0)
+		|| (SAFE_STRLEN(s3_ctx->from.fileX.remote.key) <=0))
 	{
 		size_t from_bucket_len = SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket);
 		size_t from_key_len = SAFE_STRLEN(s3_ctx->from.fileX.remote.key);
@@ -99,7 +99,7 @@ int s3_delete_object(S3_InfoX_t *s3_ctx)
 	Aws::S3::Model::DeleteObjectRequest s3_delete_req;
 
 	// Set up the request.
-	s3_delete_req.WithKey( s3_ctx->from.fileX.remote.key ).WithBucket( s3_ctx->from.fileX.remote.bucket );
+	s3_delete_req.WithKey(s3_ctx->from.fileX.remote.key).WithBucket(s3_ctx->from.fileX.remote.bucket);
 
 	Aws::S3::Model::DeleteObjectOutcome s3_delete_res = s3_ctx->s3_cli->DeleteObject(s3_delete_req);
 	if (s3_delete_res.IsSuccess())
@@ -121,14 +121,14 @@ int s3_get_object(S3_InfoX_t *s3_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= S3_CTX_CHECK_CLI(s3_ctx) ) == -1 )
+	if ((ret= S3_CTX_CHECK_CLI(s3_ctx)) == -1)
 	{
 		return ret;
 	}
 
-	if ( (SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->from.fileX.remote.key) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->to.fileX.localname) <=0 ) )
+	if ((SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket) <=0)
+		|| (SAFE_STRLEN(s3_ctx->from.fileX.remote.key) <=0)
+		|| (SAFE_STRLEN(s3_ctx->to.fileX.localname) <=0))
 	{
 		size_t from_bucket_len = SAFE_STRLEN(s3_ctx->from.fileX.remote.bucket);
 		size_t from_key_len = SAFE_STRLEN(s3_ctx->from.fileX.remote.key);
@@ -141,10 +141,10 @@ int s3_get_object(S3_InfoX_t *s3_ctx)
 	Aws::S3::Model::GetObjectRequest s3_get_req;
 
 	// Set up the request.
-	s3_get_req.WithBucket( s3_ctx->from.fileX.remote.bucket ).WithKey( s3_ctx->from.fileX.remote.key );
+	s3_get_req.WithBucket(s3_ctx->from.fileX.remote.bucket).WithKey(s3_ctx->from.fileX.remote.key);
 
 	char *saveto = s3_ctx->to.fileX.localname;
-	s3_get_req.SetResponseStreamFactory([saveto] { return new std::fstream( (const char*)saveto, std::ios_base::out); });
+	s3_get_req.SetResponseStreamFactory([saveto] { return new std::fstream((const char*)saveto, std::ios_base::out); });
 
 	Aws::S3::Model::GetObjectOutcome s3_get_res = s3_ctx->s3_cli->GetObject(s3_get_req);
 	if (s3_get_res.IsSuccess())
@@ -165,14 +165,14 @@ int s3_put_object(S3_InfoX_t *s3_ctx)
 {
 	int ret = 0;
 
-	if ( ( ret= S3_CTX_CHECK_CLI(s3_ctx) ) == -1 )
+	if ((ret= S3_CTX_CHECK_CLI(s3_ctx)) == -1)
 	{
 		return ret;
 	}
 
-	if ( (SAFE_STRLEN(s3_ctx->to.fileX.remote.bucket) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->to.fileX.remote.key) <=0 )
-		|| (SAFE_STRLEN(s3_ctx->from.fileX.localname) <=0 ) )
+	if ((SAFE_STRLEN(s3_ctx->to.fileX.remote.bucket) <=0)
+		|| (SAFE_STRLEN(s3_ctx->to.fileX.remote.key) <=0)
+		|| (SAFE_STRLEN(s3_ctx->from.fileX.localname) <=0))
 	{
 		size_t to_bucket_len = SAFE_STRLEN(s3_ctx->to.fileX.remote.bucket);
 		size_t to_key_len = SAFE_STRLEN(s3_ctx->to.fileX.remote.key);
@@ -185,7 +185,7 @@ int s3_put_object(S3_InfoX_t *s3_ctx)
 	Aws::S3::Model::PutObjectRequest s3_put_req;
 
 	// Set up the request.
-	s3_put_req.WithBucket( s3_ctx->to.fileX.remote.bucket ).WithKey( s3_ctx->to.fileX.remote.key );
+	s3_put_req.WithBucket(s3_ctx->to.fileX.remote.bucket).WithKey(s3_ctx->to.fileX.remote.key);
 
 	char *fromfile = s3_ctx->from.fileX.localname;
 	std::shared_ptr<Aws::IOStream> inputData = Aws::MakeShared<Aws::FStream>(ALLOCATION_TAG, fromfile, std::ios_base::in | std::ios_base::binary);
@@ -212,7 +212,7 @@ int s3_put_object(S3_InfoX_t *s3_ctx)
 
 void s3_ctx_init_copy(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key, char *to_bucket, char *to_key)
 {
-	if ( (s3_ctx) && (from_bucket) && (from_key) && (to_bucket) && (to_key) )
+	if ((s3_ctx) && (from_bucket) && (from_key) && (to_bucket) && (to_key))
 	{
 		SAFE_MEMSET(&s3_ctx->from, 0, sizeof(S3_FILEX_t));
 		SAFE_MEMSET(&s3_ctx->to, 0, sizeof(S3_FILEX_t));
@@ -226,7 +226,7 @@ void s3_ctx_init_copy(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key, cha
 
 void s3_ctx_init_delete(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key)
 {
-	if ( (s3_ctx) && (from_bucket) && (from_key) )
+	if ((s3_ctx) && (from_bucket) && (from_key))
 	{
 		SAFE_MEMSET(&s3_ctx->from, 0, sizeof(S3_FILEX_t));
 		SAFE_MEMSET(&s3_ctx->to, 0, sizeof(S3_FILEX_t));
@@ -238,7 +238,7 @@ void s3_ctx_init_delete(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key)
 
 void s3_ctx_init_get(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key, char *localname)
 {
-	if ( (s3_ctx) && (from_bucket) && (from_key) && (localname) )
+	if ((s3_ctx) && (from_bucket) && (from_key) && (localname))
 	{
 		SAFE_MEMSET(&s3_ctx->from, 0, sizeof(S3_FILEX_t));
 		SAFE_MEMSET(&s3_ctx->to, 0, sizeof(S3_FILEX_t));
@@ -251,7 +251,7 @@ void s3_ctx_init_get(S3_InfoX_t *s3_ctx, char *from_bucket, char *from_key, char
 
 void s3_ctx_init_put(S3_InfoX_t *s3_ctx, char *localname, char *to_bucket, char *to_key)
 {
-	if ( (s3_ctx) && (to_bucket) && (to_key) && (localname) )
+	if ((s3_ctx) && (to_bucket) && (to_key) && (localname))
 	{
 		SAFE_MEMSET(&s3_ctx->from, 0, sizeof(S3_FILEX_t));
 		SAFE_MEMSET(&s3_ctx->to, 0, sizeof(S3_FILEX_t));
@@ -264,7 +264,7 @@ void s3_ctx_init_put(S3_InfoX_t *s3_ctx, char *localname, char *to_bucket, char 
 
 void s3_ctx_free(S3_InfoX_t *s3_ctx)
 {
-	if ( (s3_ctx) && (s3_ctx->isfree == 0) )
+	if ((s3_ctx) && (s3_ctx->isfree == 0))
 	{
 		s3_ctx->isfree = 1;
 	}
@@ -272,7 +272,7 @@ void s3_ctx_free(S3_InfoX_t *s3_ctx)
 
 void s3_ctx_init(S3_InfoX_t *s3_ctx, Aws::S3::S3Client *dydb_cli)
 {
-	if ( (s3_ctx) && (s3_ctx->isinit == 0) )
+	if ((s3_ctx) && (s3_ctx->isinit == 0))
 	{
 		s3_ctx->isinit = 1;
 		s3_ctx->isfree = 0;

@@ -16,7 +16,7 @@
 #define __AWSX9_H__
 
 #include <aws/core/Aws.h>
-#include <aws/core/utils/Outcome.h> 
+#include <aws/core/utils/Outcome.h>
 #include <aws/dynamodb/DynamoDBClient.h>
 #include <aws/dynamodb/model/AttributeDefinition.h>
 

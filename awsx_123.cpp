@@ -50,7 +50,8 @@ static void app_set_quit(int mode)
 #define DYDB_SK_VAL_LANKA "Lanka"
 #define DYDB_SK_VAL_HAPPY_DAY "Happy Day"
 
-DyDB_InfoX_t dydb_t_Music = {
+DyDB_InfoX_t dydb_t_Music =
+{
 	.dydb_cli = NULL,
 	.isinit = 0,
 	.isfree = 0,
@@ -65,14 +66,15 @@ DyDB_InfoX_t dydb_t_Music = {
 #define DYDB_PK_NAME_PK "PK"
 #define DYDB_SK_NAME_SK "SK"
 
-DyDB_InfoX_t dydb_t_Demo = {
+DyDB_InfoX_t dydb_t_Demo =
+{
 	.dydb_cli = NULL,
 	.isinit = 0,
 	.isfree = 0,
 	.table_name = DYDB_TABLE_NAME_DEMO,
 	.pk = DYDB_PK_NAME_PK,
 	.pk_val = DYDB_PK_VAL_LANKA,
-	.sk = DYDB_SK_NAME_SK ,
+	.sk = DYDB_SK_NAME_SK,
 	.sk_val = DYDB_SK_VAL_HAPPY_DAY,
 };
 
@@ -190,12 +192,13 @@ static void aws_dynamodb_demo(void)
 #endif
 }
 
-S3_InfoX_t s3_b_Demo = {
+S3_InfoX_t s3_b_Demo =
+{
 	.s3_cli = NULL,
 	.isinit = 0,
 	.isfree = 0,
 };
-	
+
 static void aws_s3_demo(void)
 {
 	DBG_IF_LN(DBG_TXT_ENTER);
@@ -236,11 +239,11 @@ static void aws_s3_demo(void)
 
 static void aws_open(void)
 {
-	if ( test_DynamoDB == 1 )
+	if (test_DynamoDB == 1)
 	{
 		aws_dynamodb_demo();
 	}
-	if ( test_S3 == 1 )
+	if (test_S3 == 1)
 	{
 		aws_s3_demo();
 	}
@@ -248,12 +251,12 @@ static void aws_open(void)
 
 static void aws_free(void)
 {
-	if ( test_DynamoDB == 1 )
+	if (test_DynamoDB == 1)
 	{
 		dydb_ctx_free(&dydb_t_Music);
 		dydb_ctx_free(&dydb_t_Demo);
 	}
-	if ( test_S3 == 1 )
+	if (test_S3 == 1)
 	{
 		s3_ctx_free(&s3_b_Demo);
 	}
@@ -324,13 +327,13 @@ static void app_signal_handler(int signum)
 
 static void app_signal_register(void)
 {
-	signal(SIGINT, app_signal_handler );
-	signal(SIGTERM, app_signal_handler );
-	signal(SIGHUP, app_signal_handler );
-	signal(SIGUSR1, app_signal_handler );
-	signal(SIGUSR2, app_signal_handler );
+	signal(SIGINT, app_signal_handler);
+	signal(SIGTERM, app_signal_handler);
+	signal(SIGHUP, app_signal_handler);
+	signal(SIGUSR1, app_signal_handler);
+	signal(SIGUSR2, app_signal_handler);
 
-	signal(SIGPIPE, SIG_IGN );
+	signal(SIGPIPE, SIG_IGN);
 }
 
 int option_index = 0;
@@ -346,14 +349,14 @@ static struct option long_options[] =
 
 static void app_showusage(int exit_code)
 {
-	printf( "Usage: %s\n"
-					"  -d, --debug       debug level\n"
-					"  -b, --db          DynamoDB Demo \n"
-					"  -s, --s3          S3 Demo \n"
-					"  -h, --help\n", TAG);
-	printf( "Version: %s\n", version_show());
-	printf( "Example:\n"
-					"  %s -d 4\n", TAG);
+	printf("Usage: %s\n"
+		"  -d, --debug       debug level\n"
+		"  -b, --db          DynamoDB Demo \n"
+		"  -s, --s3          S3 Demo \n"
+		"  -h, --help\n", TAG);
+	printf("Version: %s\n", version_show());
+	printf("Example:\n"
+		"  %s -d 4\n", TAG);
 	exit(exit_code);
 }
 
@@ -361,7 +364,7 @@ static void app_ParseArguments(int argc, char **argv)
 {
 	int opt;
 
-	while((opt = getopt_long (argc, argv, short_options, long_options, &option_index)) != -1)
+	while ((opt = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
 	{
 		switch (opt)
 		{
@@ -372,22 +375,22 @@ static void app_ParseArguments(int argc, char **argv)
 				}
 				break;
 			case 'b':
-				{
-					test_DynamoDB = 1;
-				}
-				break;
+			{
+				test_DynamoDB = 1;
+			}
+			break;
 			case 's':
-				{
-					test_S3 = 1;
-				}
-				break;
+			{
+				test_S3 = 1;
+			}
+			break;
 			default:
 				app_showusage(-1);
 				break;
 		}
 	}
 
-	if ( (test_DynamoDB | test_S3) == 0 )
+	if ((test_DynamoDB | test_S3) == 0)
 	{
 		app_showusage(-1);
 	}
@@ -404,7 +407,7 @@ int main(int argc, char** argv)
 	app_signal_register();
 	atexit(app_exit);
 
-	if ( app_init() == -1 )
+	if (app_init() == -1)
 	{
 		return -1;
 	}
