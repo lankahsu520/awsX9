@@ -1,17 +1,18 @@
 # 1. Overview
-awsX9 is an api of [AWS SDK (C++)](https://github.com/aws/aws-sdk-cpp) . We can save our time from learning AWS SDK.
 
-Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-CLI.md) and [helper_AWS-SDK.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-SDK.md).
+> awsX9 is an api of [AWS SDK (C++)](https://github.com/aws/aws-sdk-cpp) . We can save our time from learning AWS SDK.
+>
+> Please also read [helper_AWS-CLI.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-CLI.md) and [helper_AWS-SDK.md](https://github.com/lankahsu520/HelperX/blob/master/helper_AWS-SDK.md).
 
 
 # 2. Depend on
 
-- [utilx9](https://github.com/lankahsu520/utilx9)
-- [AWS SDK (C++)](https://www.silabs.com/wireless/z-wave) (aws-sdk-cpp-1.10.9)
+#### - [utilx9](https://github.com/lankahsu520/utilx9)
+#### - [AWS SDK (C++)](https://www.silabs.com/wireless/z-wave) (aws-sdk-cpp-1.10.9)
 
 # 3. Current Status
 
-#### A. DynamoDB
+## 3.1. DynamoDB
 ```mermaid
 flowchart TD
 	subgraph Amazon
@@ -64,7 +65,7 @@ flowchart TD
 	class DynamoDB pink
 	class awsxDB pink
 ```
-#### B. S3
+## 3.2. S3
 ```mermaid
 flowchart TD
 	subgraph Amazon
@@ -92,12 +93,14 @@ flowchart TD
 ```
 # 4. Build
 
+> 已經整合進 [xbox9](https://github.com/lankahsu520/xbox9)，相關步驟請參考 [xbox9](https://github.com/lankahsu520/xbox9)。
+
    ```bash
-$ vi utilx9/conf/github.conf
-export PJ_HAS_AWSX9=yes
-export PJ_HAS_AWS_SDK_CPP=yes
-# please build AWS SDK C++ by yourself.
-# or update utilx9/user/library_pub.mk
+$ pwd
+/work/xbox9
+$ cd user/vendor/aws/awsX9
+$ make distclean
+# update 
 $ make
    ```
 
@@ -270,14 +273,11 @@ $ ./awsx_123 -b
 
 ```
 
-# 6. License
 
-awsX9 is under the New BSD License (BSD-3-Clause).
+# 6. Documentation
+> Run an example and read it.
 
-
-# 7. Documentation
-Run an example and read it.
-#### A. [DynamoDB](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/examples-dynamodb.html)
+## 6.1. [DynamoDB](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/examples-dynamodb.html)
 
 | DynamoDB | SQL Database |
 | -------- | -------------- |
@@ -285,10 +285,28 @@ Run an example and read it.
 | Item | Row |
 | Attribute | Column |
 
-#### B. [S3](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/examples-s3.html)
+## 6.2. [S3](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/examples-s3.html)
 
 | S3 | File |
 | -------- | -------------- |
 | Bucket | Folder |
 | Key | File |
 |  |  |
+
+# Appendix
+
+# I. Study
+
+# II. Debug
+
+# III. Glossary
+
+# IV. Tool Usage
+
+# Author
+
+> Created and designed by [Lanka Hsu](lankahsu@gmail.com).
+
+# License
+
+> [awsX9](https://github.com/lankahsu520/awsX9) is under the New BSD License (BSD-3-Clause).
